@@ -41,7 +41,7 @@ info() {
 }
 
 # Available modules
-ALL_MODULES="repos packages flatpaks dotnet jetbrains claude dotfiles kde services"
+ALL_MODULES="repos packages flatpaks dotnet jetbrains claude docker dotfiles kde services"
 
 # Default settings
 DRY_RUN=false
@@ -67,6 +67,7 @@ MODULES:
     flatpaks    Install Flatpak apps from packages/flatpaks.txt
     jetbrains   Install JetBrains Toolbox App
     claude      Install Claude Code CLI
+    docker      Install Docker Engine from official repository
     dotfiles    Symlink dotfiles from dotfiles/ to home directory
     kde         Apply KDE Plasma settings
     services    Enable/start systemd services
@@ -197,6 +198,7 @@ main() {
     run_module "dotnet"
     run_module "jetbrains"
     run_module "claude"
+    run_module "docker"
     run_module "dotfiles"
     run_module "kde"
     run_module "services"

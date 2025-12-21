@@ -23,9 +23,6 @@
 # libvirt (virtualization)
 # libvirtd
 
-# Docker
-# docker
-
 # Podman socket (for Docker compatibility)
 # podman.socket
 

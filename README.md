@@ -48,6 +48,7 @@ fedora-setup/
     ├── dotnet.sh            # .NET SDK installation
     ├── jetbrains.sh         # JetBrains Toolbox installation
     ├── claude.sh            # Claude Code CLI installation
+    ├── docker.sh            # Docker Engine installation
     ├── dotfiles.sh          # Stow dotfiles
     ├── kde.sh               # KDE configuration
     └── services.sh          # Service management
@@ -91,6 +92,7 @@ sudo ./setup.sh --skip kde,services
 | `dotnet` | Install .NET SDK to `~/.dotnet` |
 | `jetbrains` | Install JetBrains Toolbox App |
 | `claude` | Install Claude Code CLI |
+| `docker` | Install Docker Engine from official repository |
 | `dotfiles` | Symlink dotfiles using GNU Stow |
 | `kde` | Apply KDE Plasma settings |
 | `services` | Enable/disable systemd services |
@@ -220,9 +222,10 @@ By default, the script:
 5. **.NET SDK** - Installs to `~/.dotnet` using Microsoft's official installer
 6. **JetBrains Toolbox** - Downloads and installs to `~/.local/share/JetBrains/Toolbox`
 7. **Claude Code** - Installs the Claude Code CLI to `~/.local/bin`
-8. **Dotfiles** - Symlinks all stow packages to your home directory
-9. **KDE Settings** - Applies your desktop customizations
-10. **Services** - Enables/disables systemd services
+8. **Docker** - Installs Docker Engine from official Docker repository, adds user to docker group
+9. **Dotfiles** - Symlinks all stow packages to your home directory
+10. **KDE Settings** - Applies your desktop customizations
+11. **Services** - Enables/disables systemd services
 
 ## Version Control Tips
 

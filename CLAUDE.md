@@ -15,7 +15,7 @@ sudo ./setup.sh --only repos,packages # Run specific modules only
 sudo ./setup.sh --skip kde,services   # Skip specific modules
 ```
 
-**Modules** (execution order): repos, packages, flatpaks, dotnet, jetbrains, claude, dotfiles, kde, services
+**Modules** (execution order): repos, packages, flatpaks, dotnet, jetbrains, claude, docker, dotfiles, kde, services
 
 ## Architecture
 
