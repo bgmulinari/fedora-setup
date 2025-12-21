@@ -35,13 +35,40 @@ install_stow() {
     fi
 }
 
+# Run a command as the actual user if running with sudo
+run_as_user() {
+    if [[ -n "$SUDO_USER" ]]; then
+        sudo -u "$SUDO_USER" "$@"
+    else
+        "$@"
+    fi
+}
+
 # Run stow as the actual user if running with sudo
 run_stow() {
-    if [[ -n "$SUDO_USER" ]]; then
-        sudo -u "$SUDO_USER" stow "$@"
-    else
-        stow "$@"
-    fi
+    run_as_user stow "$@"
+}
+
+# Pre-create parent directories for a package to avoid directory-level symlinks
+# This ensures stow creates file-level symlinks instead of symlinking entire directories
+precreate_dirs() {
+    local package_dir="$1"
+
+    # Find top-level directories in the package and create them in target
+    for item in "$package_dir"/*/; do
+        [[ -d "$item" ]] || continue
+        local rel_path="${item#$package_dir/}"
+        rel_path="${rel_path%/}"
+        local target_path="$TARGET_HOME/$rel_path"
+
+        if [[ ! -e "$target_path" ]]; then
+            if [[ "$DRY_RUN" == true ]]; then
+                info "[DRY RUN] Would create directory: $target_path"
+            else
+                run_as_user mkdir -p "$target_path"
+            fi
+        fi
+    done
 }
 
 # Stow a single package
@@ -59,6 +86,9 @@ stow_package() {
         info "Skipping empty package: $package"
         return 0
     fi
+
+    # Pre-create parent directories to ensure file-level symlinks
+    precreate_dirs "$package_dir"
 
     if [[ "$DRY_RUN" == true ]]; then
         info "[DRY RUN] Would stow package: $package"
