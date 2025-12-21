@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(tree:*)",
+      "Bash(xargs ls:*)",
+      "Bash(file:*)",
+      "Bash(wc:*)",
+      "Bash(rpm -q:*)"
+    ]
+  }
+}

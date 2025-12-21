@@ -1,0 +1,114 @@
+# Fedora DNF Packages
+# Add one package per line
+# Lines starting with # are comments
+# Use @ prefix for package groups (e.g., @development-tools)
+
+# ═══════════════════════════════════════════════════════════════
+# DEVELOPMENT
+# ═══════════════════════════════════════════════════════════════
+# Visual Studio Code (requires vscode repo)
+code
+# git
+# gcc
+# gcc-c++
+# make
+# cmake
+# python3
+# python3-pip
+# nodejs
+# npm
+# rust
+# cargo
+# golang
+
+# Development group (includes common dev tools)
+# @development-tools
+
+# ═══════════════════════════════════════════════════════════════
+# TERMINAL & CLI TOOLS
+# ═══════════════════════════════════════════════════════════════
+gh
+# zsh
+# tmux
+# neovim
+# vim-enhanced
+# htop
+# btop
+# neofetch
+# fastfetch
+# fzf
+# ripgrep
+# fd-find
+# bat
+# eza
+# zoxide
+# tldr
+# jq
+# yq
+
+# ═══════════════════════════════════════════════════════════════
+# SYSTEM UTILITIES
+# ═══════════════════════════════════════════════════════════════
+# stow                 # Required for dotfiles management
+# dnf-plugins-core
+# util-linux-user
+# unzip
+# p7zip
+# p7zip-plugins
+# unrar
+# wget
+# curl
+# rsync
+# openssh-clients
+
+# ═══════════════════════════════════════════════════════════════
+# MEDIA & CODECS (requires RPM Fusion)
+# ═══════════════════════════════════════════════════════════════
+# ffmpeg
+# vlc
+# gstreamer1-plugins-bad-free
+# gstreamer1-plugins-bad-freeworld
+# gstreamer1-plugins-ugly
+
+# ═══════════════════════════════════════════════════════════════
+# KDE/QT APPS
+# ═══════════════════════════════════════════════════════════════
+# kate
+# konsole
+# dolphin
+# ark
+# gwenview
+# okular
+# spectacle
+# kcalc
+# kde-connect
+
+# ═══════════════════════════════════════════════════════════════
+# DESKTOP APPS
+# ═══════════════════════════════════════════════════════════════
+# firefox
+# chromium
+# thunderbird
+# libreoffice
+# gimp
+# inkscape
+
+# ═══════════════════════════════════════════════════════════════
+# FONTS
+# ═══════════════════════════════════════════════════════════════
+# google-noto-fonts-common
+# google-noto-sans-fonts
+# google-noto-serif-fonts
+# google-noto-emoji-fonts
+# jetbrains-mono-fonts
+# fira-code-fonts
+# cascadia-code-fonts
+
+# ═══════════════════════════════════════════════════════════════
+# VIRTUALIZATION
+# ═══════════════════════════════════════════════════════════════
+# @virtualization
+# virt-manager
+# libvirt
+# qemu-kvm
+
