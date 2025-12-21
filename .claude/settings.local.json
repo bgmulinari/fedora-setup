@@ -6,7 +6,9 @@
       "Bash(file:*)",
       "Bash(wc:*)",
       "Bash(rpm -q:*)",
-      "WebFetch(domain:raw.githubusercontent.com)"
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(cat:*)",
+      "Bash(find:*)"
     ]
   }
 }
