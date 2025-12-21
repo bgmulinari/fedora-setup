@@ -37,13 +37,15 @@ else
     exit 0
 fi
 
-# Run kwriteconfig
+# Run kwriteconfig in user's session context
 run_kwrite() {
     if [[ "$DRY_RUN" == true ]]; then
         info "[DRY RUN] Would run: $KWRITE $*"
         return
     fi
-    "$KWRITE" "$@"
+
+    info "Applying settings via user session..."
+    run_in_session "$KWRITE" "$@"
 }
 
 # Detect look-and-feel tool (KDE 6 vs 5)
@@ -69,14 +71,8 @@ run_lookandfeel() {
         return
     fi
 
-    # Running under sudo? Use systemd-run to enter user's desktop session
-    if [[ -n "${SUDO_USER:-}" ]]; then
-        info "Applying theme via user session..."
-        systemd-run --uid="$(id -u "$SUDO_USER")" --machine="$SUDO_USER@" --user \
-            "$LOOKANDFEEL" -a "$theme"
-    else
-        "$LOOKANDFEEL" -a "$theme"
-    fi
+    info "Applying theme via user session..."
+    run_in_session "$LOOKANDFEEL" -a "$theme"
 }
 
 # Apply settings from config/kde-settings.sh if it exists

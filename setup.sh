@@ -40,8 +40,30 @@ info() {
     echo -e "${BLUE}    $1${NC}"
 }
 
+# User context for running commands as actual user (not root) under sudo
+ACTUAL_USER="${SUDO_USER:-$USER}"
+ACTUAL_HOME=$(getent passwd "$ACTUAL_USER" | cut -d: -f6)
+
+# Run command as actual user (for file operations, downloads, etc.)
+run_as_user() {
+    if [[ -n "${SUDO_USER:-}" ]]; then
+        sudo -u "$SUDO_USER" "$@"
+    else
+        "$@"
+    fi
+}
+
+# Run command in user's desktop session (for KDE, D-Bus, GUI apps)
+run_in_session() {
+    if [[ -n "${SUDO_USER:-}" ]]; then
+        systemd-run --uid="$(id -u "$SUDO_USER")" --machine="$SUDO_USER@" --user "$@"
+    else
+        "$@"
+    fi
+}
+
 # Available modules
-ALL_MODULES="repos packages flatpaks dotnet jetbrains claude docker dotfiles kde services"
+ALL_MODULES="repos packages flatpaks dotnet jetbrains claude docker fonts dotfiles kde services"
 
 # Default settings
 DRY_RUN=false
@@ -68,6 +90,7 @@ MODULES:
     jetbrains   Install JetBrains Toolbox App
     claude      Install Claude Code CLI
     docker      Install Docker Engine from official repository
+    fonts       Install JetBrainsMono Nerd Font
     dotfiles    Symlink dotfiles from dotfiles/ to home directory
     kde         Apply KDE Plasma settings
     services    Enable/start systemd services
@@ -165,8 +188,8 @@ check_privileges() {
 }
 
 # Export variables and functions for child scripts
-export SCRIPT_DIR LOG_FILE DRY_RUN
-export -f log warn error info
+export SCRIPT_DIR LOG_FILE DRY_RUN ACTUAL_USER ACTUAL_HOME
+export -f log warn error info run_as_user run_in_session
 
 # Main execution
 main() {
@@ -199,6 +222,7 @@ main() {
     run_module "jetbrains"
     run_module "claude"
     run_module "docker"
+    run_module "fonts"
     run_module "dotfiles"
     run_module "kde"
     run_module "services"

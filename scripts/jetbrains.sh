@@ -5,10 +5,6 @@
 
 log "Setting up JetBrains Toolbox..."
 
-# User context handling (pattern from dotnet.sh)
-ACTUAL_USER="${SUDO_USER:-$USER}"
-ACTUAL_HOME=$(getent passwd "$ACTUAL_USER" | cut -d: -f6)
-
 # Installation paths
 TOOLBOX_DIR="$ACTUAL_HOME/.local/share/JetBrains/Toolbox"
 TOOLBOX_BIN="$TOOLBOX_DIR/bin/jetbrains-toolbox"
@@ -55,12 +51,12 @@ info "Latest version: $VERSION"
 info "Download URL: $DOWNLOAD_URL"
 
 # Create directories
-sudo -u "$ACTUAL_USER" mkdir -p "$TOOLBOX_DIR"
-sudo -u "$ACTUAL_USER" mkdir -p "$LOCAL_BIN"
+run_as_user mkdir -p "$TOOLBOX_DIR"
+run_as_user mkdir -p "$LOCAL_BIN"
 
 # Download and extract in one step
 log "Downloading and extracting JetBrains Toolbox..."
-if ! sudo -u "$ACTUAL_USER" bash -c "curl -fsSL '$DOWNLOAD_URL' | tar -xzf - -C '$TOOLBOX_DIR' --strip-components=1"; then
+if ! run_as_user bash -c "curl -fsSL '$DOWNLOAD_URL' | tar -xzf - -C '$TOOLBOX_DIR' --strip-components=1"; then
     error "Failed to download or extract JetBrains Toolbox"
     return 1
 fi
@@ -69,12 +65,12 @@ fi
 if [[ -L "$TOOLBOX_SYMLINK" ]]; then
     rm -f "$TOOLBOX_SYMLINK"
 fi
-sudo -u "$ACTUAL_USER" ln -s "$TOOLBOX_BIN" "$TOOLBOX_SYMLINK"
+run_as_user ln -s "$TOOLBOX_BIN" "$TOOLBOX_SYMLINK"
 info "Created symlink: $TOOLBOX_SYMLINK"
 
 # Launch Toolbox in background to initialize .desktop file
 log "Launching Toolbox to initialize desktop integration..."
-sudo -u "$ACTUAL_USER" bash -c "nohup '$TOOLBOX_BIN' &>/dev/null &"
+run_as_user bash -c "nohup '$TOOLBOX_BIN' &>/dev/null &"
 sleep 2
 info "Toolbox launched in background"
 info "Desktop entry will be created at ~/.local/share/applications/"

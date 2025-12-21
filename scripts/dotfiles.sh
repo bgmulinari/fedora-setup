@@ -7,15 +7,7 @@
 log "Setting up dotfiles with GNU Stow..."
 
 DOTFILES_DIR="$SCRIPT_DIR/dotfiles"
-ACTUAL_USER="${SUDO_USER:-$USER}"
-ACTUAL_HOME=$(getent passwd "$ACTUAL_USER" | cut -d: -f6)
-
-# Use actual user's home directory if running with sudo
-if [[ -n "$SUDO_USER" ]]; then
-    TARGET_HOME="$ACTUAL_HOME"
-else
-    TARGET_HOME="$HOME"
-fi
+TARGET_HOME="$ACTUAL_HOME"
 
 # Ensure stow is installed
 install_stow() {
@@ -35,16 +27,7 @@ install_stow() {
     fi
 }
 
-# Run a command as the actual user if running with sudo
-run_as_user() {
-    if [[ -n "$SUDO_USER" ]]; then
-        sudo -u "$SUDO_USER" "$@"
-    else
-        "$@"
-    fi
-}
-
-# Run stow as the actual user if running with sudo
+# Run stow as the actual user
 run_stow() {
     run_as_user stow "$@"
 }

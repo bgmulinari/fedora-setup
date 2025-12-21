@@ -34,7 +34,7 @@ run_lookandfeel "org.fedoraproject.fedoradark.desktop"
 # run_kwrite --file kdeglobals --group General --key font "Noto Sans,10,-1,5,50,0,0,0,0,0"
 
 # Fixed-width font
-# run_kwrite --file kdeglobals --group General --key fixed "JetBrains Mono,10,-1,5,50,0,0,0,0,0"
+run_kwrite --file kdeglobals --group General --key fixed "JetBrainsMono Nerd Font,10,-1,5,50,0,0,0,0,0"
 
 # ═══════════════════════════════════════════════════════════════
 # KONSOLE
