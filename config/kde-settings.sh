@@ -9,13 +9,14 @@
 # APPEARANCE
 # ═══════════════════════════════════════════════════════════════
 
-# Color scheme (e.g., "BreezeDark", "BreezeLight", "BreezeClassic")
-# run_kwrite --file kdeglobals --group General --key ColorScheme "BreezeDark"
+# Global Theme / Look and Feel
+# Available: org.kde.breeze.desktop, org.kde.breezedark.desktop,
+#            org.fedoraproject.fedora.desktop, org.fedoraproject.fedoradark.desktop
+run_lookandfeel "org.fedoraproject.fedoradark.desktop"
 
-# Icon theme (e.g., "breeze-dark", "breeze", "Papirus-Dark")
-# run_kwrite --file kdeglobals --group Icons --key Theme "breeze-dark"
-
-# Cursor theme (e.g., "breeze_cursors", "Breeze_Snow")
+# Individual settings (only needed if NOT using look-and-feel above):
+# run_kwrite --file kdeglobals --group General --key ColorScheme "BreezeLight"
+# run_kwrite --file kdeglobals --group Icons --key Theme "breeze"
 # run_kwrite --file kcminputrc --group Mouse --key cursorTheme "breeze_cursors"
 
 # ═══════════════════════════════════════════════════════════════

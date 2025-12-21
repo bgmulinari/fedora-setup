@@ -187,16 +187,17 @@ ModemManager:mask
 
 ### KDE Plasma Settings
 
-Edit `config/kde-settings.sh` to customize your desktop. The script uses `kwriteconfig5`/`kwriteconfig6`:
+Edit `config/kde-settings.sh` to customize your desktop:
 
 ```bash
-# Set dark theme
+# Set global theme (recommended - applies instantly)
+# Available: org.kde.breeze.desktop, org.kde.breezedark.desktop,
+#            org.fedoraproject.fedora.desktop, org.fedoraproject.fedoradark.desktop
+run_lookandfeel "org.fedoraproject.fedoradark.desktop"
+
+# Individual settings (alternative to global theme):
 run_kwrite --file kdeglobals --group General --key ColorScheme "BreezeDark"
-
-# Set icon theme
 run_kwrite --file kdeglobals --group Icons --key Theme "Papirus-Dark"
-
-# Disable single-click to open
 run_kwrite --file kdeglobals --group KDE --key SingleClick "false"
 ```
 
