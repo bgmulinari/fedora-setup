@@ -36,6 +36,7 @@ gh
 # btop
 # neofetch
 fastfetch
+ghostty
 # fzf
 # ripgrep
 # fd-find

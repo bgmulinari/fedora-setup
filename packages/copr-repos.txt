@@ -27,3 +27,6 @@
 # helix - post-modern text editor
 # varlad/helix
 
+# ghostty - fast, feature-rich terminal emulator
+scottames/ghostty
+
