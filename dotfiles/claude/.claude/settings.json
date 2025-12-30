@@ -3,5 +3,9 @@
   "attribution": {
     "commit": "",
     "pr": ""
-  }
+  },
+  "enabledPlugins": {
+    "csharp-lsp@claude-plugins-official": true
+  },
+  "alwaysThinkingEnabled": true
 }
