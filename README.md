@@ -65,6 +65,7 @@ fedora-setup/
 
 ```bash
 sudo ./setup.sh                       # Run full setup (with TUI)
+sudo ./setup.sh -y                    # Skip confirmation prompt
 sudo ./setup.sh --no-tui              # Run with plain text output
 sudo ./setup.sh --only repos,packages # Run specific modules
 sudo ./setup.sh --skip kde,services   # Skip specific modules

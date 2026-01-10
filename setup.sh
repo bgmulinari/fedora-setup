@@ -75,6 +75,7 @@ source "$SCRIPT_DIR/lib/tui.sh"
 SKIP_MODULES=""
 ONLY_MODULES=""
 TUI_DISABLED=0
+SKIP_CONFIRM=0
 
 # Parse command line arguments
 usage() {
@@ -85,6 +86,7 @@ Fedora Auto-Setup Script
 
 OPTIONS:
     -h, --help          Show this help message
+    -y, --yes           Skip confirmation prompt
     --skip MODULES      Skip specified modules (comma-separated)
     --only MODULES      Run only specified modules (comma-separated)
     --no-tui            Disable TUI mode (use plain output)
@@ -128,6 +130,10 @@ parse_args() {
                 TUI_DISABLED=1
                 shift
                 ;;
+            -y|--yes)
+                SKIP_CONFIRM=1
+                shift
+                ;;
             *)
                 error "Unknown option: $1"
                 usage
@@ -157,6 +163,35 @@ should_run_module() {
     fi
 
     return 0
+}
+
+# Show execution plan
+show_plan() {
+    local modules_to_run=""
+    local modules_to_skip=""
+
+    for module in $ALL_MODULES; do
+        if should_run_module "$module"; then
+            modules_to_run="$modules_to_run $module"
+        else
+            modules_to_skip="$modules_to_skip $module"
+        fi
+    done
+
+    echo ""
+    echo -e "${BLUE}Modules to run:${NC}"
+    for module in $modules_to_run; do
+        echo -e "  ${GREEN}+${NC} $module"
+    done
+
+    if [[ -n "$modules_to_skip" ]]; then
+        echo ""
+        echo -e "${BLUE}Modules to skip:${NC}"
+        for module in $modules_to_skip; do
+            echo -e "  ${YELLOW}-${NC} $module"
+        done
+    fi
+    echo ""
 }
 
 # Run a module script
@@ -206,19 +241,27 @@ main() {
     # Log start
     echo "=== Setup started at $(date) ===" >> "$LOG_FILE"
 
+    # Show banner and confirmation before TUI takes over
+    echo ""
+    echo -e "${BLUE}╔══════════════════════════════════════════╗${NC}"
+    echo -e "${BLUE}║     Fedora Auto-Setup Script             ║${NC}"
+    echo -e "${BLUE}╚══════════════════════════════════════════╝${NC}"
+
+    # Show execution plan and ask for confirmation
+    show_plan
+    if [[ $SKIP_CONFIRM -eq 0 ]]; then
+        read -rp "Proceed with setup? [y/N] " response
+        if [[ ! "$response" =~ ^[Yy]$ ]]; then
+            echo "Setup cancelled."
+            exit 0
+        fi
+        echo ""
+    fi
+
     # Initialize TUI (unless disabled)
     if [[ $TUI_DISABLED -eq 0 ]]; then
         tui_init
         trap 'tui_cleanup' EXIT
-    fi
-
-    # Show banner in non-TUI mode
-    if [[ $TUI_ENABLED -eq 0 ]]; then
-        echo ""
-        echo -e "${BLUE}╔══════════════════════════════════════════╗${NC}"
-        echo -e "${BLUE}║     Fedora Auto-Setup Script             ║${NC}"
-        echo -e "${BLUE}╚══════════════════════════════════════════╝${NC}"
-        echo ""
     fi
 
     # Check privileges (skip for dotfiles-only runs as regular user)

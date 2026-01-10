@@ -14,6 +14,7 @@ sh <(curl -L https://raw.githubusercontent.com/bgmulinari/fedora-setup/main/auto
 
 # Local install
 sudo ./setup.sh                       # Run full setup (with TUI)
+sudo ./setup.sh --yes                 # Skip confirmation prompt
 sudo ./setup.sh --no-tui              # Run with plain text output
 sudo ./setup.sh --only repos,packages # Run specific modules only
 sudo ./setup.sh --skip kde,services   # Skip specific modules
