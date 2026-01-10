@@ -1,2 +1,20 @@
-# Catppuccin Mocha theme (built-in)
+# Theme
 theme = Catppuccin Mocha
+
+# Font
+font-family = "JetBrainsMono Nerd Font"
+font-thicken = true
+font-size = 10
+
+# Window size
+window-height = 30
+window-width = 110 
+
+# Background
+background-opacity = 0.75
+background-blur-radius = 20
+
+# Misc
+copy-on-select = clipboard
+bold-is-bright = true
+confirm-close-surface = false
