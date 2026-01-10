@@ -41,8 +41,10 @@ fedora-setup/
 │   └── copr-repos.txt       # COPR repositories to enable
 ├── dotfiles/                # Stow-managed dotfiles
 │   ├── bash/                # Bash configs (.bashrc.d/)
+│   ├── btop/                # btop system monitor config
 │   ├── claude/              # Claude Code settings
-│   └── konsole/             # Konsole terminal profiles
+│   ├── ghostty/             # Ghostty terminal config
+│   └── vscode/              # VS Code settings
 ├── config/
 │   ├── dnf.conf             # DNF performance settings
 │   ├── services.txt         # Systemd services to manage
@@ -56,6 +58,7 @@ fedora-setup/
     ├── claude.sh            # Claude Code CLI installation
     ├── docker.sh            # Docker Engine installation
     ├── fonts.sh             # JetBrainsMono Nerd Font installation
+    ├── catppuccin.sh        # Catppuccin theme installation
     ├── dotfiles.sh          # GNU Stow dotfiles
     ├── kde.sh               # KDE configuration
     └── services.sh          # Systemd service management
@@ -83,8 +86,9 @@ sudo ./setup.sh --skip kde,services   # Skip specific modules
 | `claude` | Install Claude Code CLI |
 | `docker` | Install Docker Engine, add user to docker group |
 | `fonts` | Install JetBrainsMono Nerd Font |
+| `catppuccin` | Install Catppuccin Mocha theme (KDE, GTK, VS Code, btop) |
 | `dotfiles` | Symlink dotfiles using GNU Stow |
-| `kde` | Apply KDE Plasma settings |
+| `kde` | Apply KDE Plasma settings (Catppuccin theme) |
 | `services` | Enable/disable systemd services |
 
 ## Configuration
@@ -138,8 +142,11 @@ ModemManager:mask     # Mask
 Edit `config/kde-settings.sh`:
 
 ```bash
-# Global theme
-run_lookandfeel "org.fedoraproject.fedoradark.desktop"
+# Global theme (Catppuccin Mocha Blue)
+run_lookandfeel "Catppuccin-Mocha-Blue"
+
+# GTK theme for GTK apps
+run_kwrite --file gtk-3.0/settings.ini --group Settings --key gtk-theme-name "catppuccin-mocha-blue-standard+default"
 
 # Fixed-width font
 run_kwrite --file kdeglobals --group General --key fixed "JetBrainsMono Nerd Font,10"
@@ -153,8 +160,9 @@ run_kwrite --file kdeglobals --group General --key TerminalApplication "ghostty"
 Each subdirectory in `dotfiles/` mirrors your home directory:
 
 ```
-dotfiles/bash/.bashrc.d/dotnet  →  ~/.bashrc.d/dotnet
-dotfiles/claude/.claude.json    →  ~/.claude.json
+dotfiles/bash/.bashrc.d/dotnet           →  ~/.bashrc.d/dotnet
+dotfiles/ghostty/.config/ghostty/config  →  ~/.config/ghostty/config
+dotfiles/vscode/.config/Code/User/...    →  ~/.config/Code/User/...
 ```
 
 ## Troubleshooting

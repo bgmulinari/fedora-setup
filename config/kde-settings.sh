@@ -5,10 +5,12 @@
 # Uses kwriteconfig5 or kwriteconfig6 (auto-detected)
 #
 
-# Global Theme / Look and Feel
-# Available: org.kde.breeze.desktop, org.kde.breezedark.desktop,
-#            org.fedoraproject.fedora.desktop, org.fedoraproject.fedoradark.desktop
-run_lookandfeel "org.fedoraproject.fedoradark.desktop"
+# Global Theme / Look and Feel - Catppuccin Mocha Blue
+run_lookandfeel "Catppuccin-Mocha-Blue"
+
+# GTK theme (for GTK apps running in KDE)
+run_kwrite --file gtk-3.0/settings.ini --group Settings --key gtk-theme-name "catppuccin-mocha-blue-standard+default"
+run_kwrite --file gtk-4.0/settings.ini --group Settings --key gtk-theme-name "catppuccin-mocha-blue-standard+default"
 
 # Fixed-width font
 run_kwrite --file kdeglobals --group General --key fixed "JetBrainsMono Nerd Font,10,-1,5,50,0,0,0,0,0"
