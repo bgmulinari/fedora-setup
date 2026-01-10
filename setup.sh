@@ -244,7 +244,7 @@ main() {
     # Show banner and confirmation before TUI takes over
     echo ""
     echo -e "${BLUE}╔══════════════════════════════════════════╗${NC}"
-    echo -e "${BLUE}║     Fedora Auto-Setup Script             ║${NC}"
+    echo -e "${BLUE}║         Fedora Auto-Setup Script         ║${NC}"
     echo -e "${BLUE}╚══════════════════════════════════════════╝${NC}"
 
     # Show execution plan and ask for confirmation

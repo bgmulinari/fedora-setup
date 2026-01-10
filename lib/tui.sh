@@ -34,9 +34,10 @@ _tui_reset_scroll_region() { tput csr 0 $((TUI_TERM_LINES - 1)) 2>/dev/null || t
 
 _tui_repeat() {
     local char="$1" count="$2"
-    if [[ $count -gt 0 ]]; then
-        printf "%${count}s" | tr ' ' "$char"
-    fi
+    local i
+    for ((i=0; i<count; i++)); do
+        printf '%s' "$char"
+    done
 }
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -157,7 +158,7 @@ _tui_draw_header() {
     # Line 1: Title
     _tui_goto 1 0
     local title="Fedora Auto-Setup Script"
-    local padding=$(( (width - ${#title} - 4) / 2 ))
+    local padding=$(( (width - ${#title} - 2) / 2 ))
     [[ $padding -lt 0 ]] && padding=0
     printf "${BLUE}│${NC}%*s${GREEN}%s${NC}%*s${BLUE}│${NC}" \
         $padding "" "$title" $((width - padding - ${#title} - 2)) ""
@@ -207,9 +208,9 @@ _tui_draw_header() {
     printf "${BLUE}│${NC}%*s${BLUE}│${NC}" $((width-2)) ""
     _tui_clear_eol
 
-    # Line 11: Separator (start of log area)
+    # Line 11: Bottom border (end of header)
     _tui_goto 11 0
-    printf "${BLUE}├%s┤${NC}" "$(_tui_repeat '─' $((width-2)))"
+    printf "${BLUE}└%s┘${NC}" "$(_tui_repeat '─' $((width-2)))"
     _tui_clear_eol
 
     _tui_restore_cursor
@@ -217,7 +218,7 @@ _tui_draw_header() {
 
 _tui_draw_progress_bar() {
     local current=$1 total=$2 width=$3
-    local bar_width=$((width - 25))
+    local bar_width=$((width - 27))
     [[ $bar_width -lt 10 ]] && bar_width=10
     local filled=0
 
