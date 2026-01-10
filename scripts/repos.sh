@@ -48,6 +48,13 @@ enable_flathub() {
         dnf install -y flatpak >> "$LOG_FILE" 2>&1
     fi
 
+    # Remove Fedora's limited flatpak remote in favor of full Flathub
+    if flatpak remotes | grep -q "^fedora"; then
+        tui_set_substep "Removing Fedora flatpak remote..."
+        flatpak remote-delete --force fedora >> "$LOG_FILE" 2>&1 || true
+        info "Removed Fedora flatpak remote"
+    fi
+
     # Add Flathub remote
     if flatpak remotes | grep -q "flathub"; then
         info "Flathub already configured"

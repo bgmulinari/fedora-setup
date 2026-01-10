@@ -51,13 +51,14 @@ fedora-setup/
 │   └── kde-settings.sh      # KDE Plasma customizations
 └── scripts/                 # Module scripts
     ├── repos.sh             # Repository setup (RPM Fusion, Flathub, COPR)
+    ├── multimedia.sh        # Video codecs and hardware acceleration
     ├── packages.sh          # DNF package installation
     ├── flatpaks.sh          # Flatpak installation
     ├── dotnet.sh            # .NET SDK installation
     ├── jetbrains.sh         # JetBrains Toolbox installation
     ├── claude.sh            # Claude Code CLI installation
     ├── docker.sh            # Docker Engine installation
-    ├── fonts.sh             # JetBrainsMono Nerd Font installation
+    ├── fonts.sh             # JetBrainsMono Nerd Font and Microsoft fonts
     ├── catppuccin.sh        # Catppuccin theme installation
     ├── dotfiles.sh          # GNU Stow dotfiles
     ├── kde.sh               # KDE configuration
@@ -79,13 +80,14 @@ sudo ./setup.sh --skip kde,services   # Skip specific modules
 | Module | Description |
 |--------|-------------|
 | `repos` | Enable RPM Fusion, Flathub, COPR repos, VS Code repo |
+| `multimedia` | Install video codecs (ffmpeg, GStreamer) and hardware acceleration |
 | `packages` | Install DNF packages from `packages/dnf-packages.txt` |
 | `flatpaks` | Install Flatpak apps from `packages/flatpaks.txt` |
 | `dotnet` | Install .NET SDK to `~/.dotnet` |
 | `jetbrains` | Install JetBrains Toolbox App |
 | `claude` | Install Claude Code CLI |
 | `docker` | Install Docker Engine, add user to docker group |
-| `fonts` | Install JetBrainsMono Nerd Font |
+| `fonts` | Install JetBrainsMono Nerd Font and Microsoft core fonts |
 | `catppuccin` | Install Catppuccin Mocha theme (KDE, GTK, VS Code, btop) |
 | `dotfiles` | Symlink dotfiles using GNU Stow |
 | `kde` | Apply KDE Plasma settings (Catppuccin theme) |

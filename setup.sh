@@ -66,7 +66,7 @@ run_in_session() {
 }
 
 # Available modules
-ALL_MODULES="repos packages flatpaks dotnet jetbrains claude docker fonts catppuccin dotfiles kde services"
+ALL_MODULES="repos multimedia packages flatpaks dotnet jetbrains claude docker fonts catppuccin dotfiles kde services"
 
 # Source TUI library (after ALL_MODULES is defined)
 source "$SCRIPT_DIR/lib/tui.sh"
@@ -93,12 +93,13 @@ OPTIONS:
 
 MODULES:
     repos       Enable RPM Fusion, Flathub, COPR repositories
+    multimedia  Install video codecs and hardware acceleration
     packages    Install DNF packages from packages/dnf-packages.txt
     flatpaks    Install Flatpak apps from packages/flatpaks.txt
     jetbrains   Install JetBrains Toolbox App
     claude      Install Claude Code CLI
     docker      Install Docker Engine from official repository
-    fonts       Install JetBrainsMono Nerd Font
+    fonts       Install JetBrainsMono Nerd Font and Microsoft fonts
     dotfiles    Symlink dotfiles from dotfiles/ to home directory
     kde         Apply KDE Plasma settings
     services    Enable/start systemd services
@@ -265,12 +266,13 @@ main() {
     fi
 
     # Check privileges (skip for dotfiles-only runs as regular user)
-    if should_run_module "repos" || should_run_module "packages" || should_run_module "services"; then
+    if should_run_module "repos" || should_run_module "multimedia" || should_run_module "packages" || should_run_module "fonts" || should_run_module "services"; then
         check_privileges
     fi
 
     # Run modules in order
     run_module "repos"
+    run_module "multimedia"
     run_module "packages"
     run_module "flatpaks"
     run_module "dotnet"
