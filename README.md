@@ -4,11 +4,17 @@ Automated setup script for fresh Fedora (KDE Plasma) installations. Install pack
 
 ## Quick Start
 
-```bash
-git clone https://github.com/YOUR_USERNAME/fedora-setup.git
-cd fedora-setup
+**One-liner install** (clones to `~/fedora-setup` and runs setup):
 
-# Customize package lists, then run:
+```bash
+sh <(curl -L https://raw.githubusercontent.com/bgmulinari/fedora-setup/main/auto-install.sh)
+```
+
+**Manual install:**
+
+```bash
+git clone https://github.com/bgmulinari/fedora-setup.git
+cd fedora-setup
 sudo ./setup.sh
 ```
 
@@ -25,6 +31,7 @@ sudo ./setup.sh
 
 ```
 fedora-setup/
+├── auto-install.sh          # Remote bootstrap (curl | sh)
 ├── setup.sh                 # Main entry point
 ├── lib/
 │   └── tui.sh               # TUI library (progress display)

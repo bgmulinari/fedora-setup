@@ -9,6 +9,10 @@ Bash-based automation for fresh Fedora (KDE Plasma) installations. Modular scrip
 ## Commands
 
 ```bash
+# Remote install (no local clone needed)
+sh <(curl -L https://raw.githubusercontent.com/bgmulinari/fedora-setup/main/auto-install.sh)
+
+# Local install
 sudo ./setup.sh                       # Run full setup (with TUI)
 sudo ./setup.sh --no-tui              # Run with plain text output
 sudo ./setup.sh --only repos,packages # Run specific modules only
@@ -19,6 +23,7 @@ sudo ./setup.sh --skip kde,services   # Skip specific modules
 
 ## Architecture
 
+- `auto-install.sh` - Bootstrap script for remote execution; clones repo and runs setup.sh
 - `setup.sh` - Main orchestrator; exports shared functions (`log`, `warn`, `error`, `info`, `run_as_user`, `run_in_session`) and variables (`SCRIPT_DIR`, `LOG_FILE`, `ACTUAL_USER`, `ACTUAL_HOME`) to child scripts
 - `lib/tui.sh` - TUI library providing split-view terminal interface with progress tracking
 - `scripts/*.sh` - Module scripts sourced by setup.sh; each handles one concern
