@@ -17,6 +17,9 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
+# Export colors for TUI library
+export RED GREEN YELLOW BLUE NC
+
 # Logging functions
 log() {
     local msg="[$(date '+%Y-%m-%d %H:%M:%S')] $1"
@@ -65,9 +68,13 @@ run_in_session() {
 # Available modules
 ALL_MODULES="repos packages flatpaks dotnet jetbrains claude docker fonts dotfiles kde services"
 
+# Source TUI library (after ALL_MODULES is defined)
+source "$SCRIPT_DIR/lib/tui.sh"
+
 # Default settings
 SKIP_MODULES=""
 ONLY_MODULES=""
+TUI_DISABLED=0
 
 # Parse command line arguments
 usage() {
@@ -80,6 +87,7 @@ OPTIONS:
     -h, --help          Show this help message
     --skip MODULES      Skip specified modules (comma-separated)
     --only MODULES      Run only specified modules (comma-separated)
+    --no-tui            Disable TUI mode (use plain output)
 
 MODULES:
     repos       Enable RPM Fusion, Flathub, COPR repositories
@@ -115,6 +123,10 @@ parse_args() {
             --only)
                 ONLY_MODULES="$2"
                 shift 2
+                ;;
+            --no-tui)
+                TUI_DISABLED=1
+                shift
                 ;;
             *)
                 error "Unknown option: $1"
@@ -153,19 +165,26 @@ run_module() {
     local script="$SCRIPT_DIR/scripts/${module}.sh"
 
     if ! should_run_module "$module"; then
+        tui_skip_module "$module"
         info "Skipping $module (excluded by options)"
         return 0
     fi
 
     if [[ ! -f "$script" ]]; then
+        tui_skip_module "$module"
         warn "Module script not found: $script"
         return 0
     fi
 
+    tui_start_module "$module"
     log "Running module: $module"
 
     # shellcheck source=/dev/null
-    source "$script"
+    if source "$script"; then
+        tui_end_module "$module" "done"
+    else
+        tui_end_module "$module" "error"
+    fi
 }
 
 # Check for root/sudo
@@ -177,21 +196,30 @@ check_privileges() {
 }
 
 # Export variables and functions for child scripts
-export SCRIPT_DIR LOG_FILE ACTUAL_USER ACTUAL_HOME
+export SCRIPT_DIR LOG_FILE ACTUAL_USER ACTUAL_HOME ALL_MODULES
 export -f log warn error info run_as_user run_in_session
 
 # Main execution
 main() {
     parse_args "$@"
 
-    echo ""
-    echo -e "${BLUE}╔══════════════════════════════════════════╗${NC}"
-    echo -e "${BLUE}║     Fedora Auto-Setup Script             ║${NC}"
-    echo -e "${BLUE}╚══════════════════════════════════════════╝${NC}"
-    echo ""
-
     # Log start
     echo "=== Setup started at $(date) ===" >> "$LOG_FILE"
+
+    # Initialize TUI (unless disabled)
+    if [[ $TUI_DISABLED -eq 0 ]]; then
+        tui_init
+        trap 'tui_cleanup' EXIT
+    fi
+
+    # Show banner in non-TUI mode
+    if [[ $TUI_ENABLED -eq 0 ]]; then
+        echo ""
+        echo -e "${BLUE}╔══════════════════════════════════════════╗${NC}"
+        echo -e "${BLUE}║     Fedora Auto-Setup Script             ║${NC}"
+        echo -e "${BLUE}╚══════════════════════════════════════════╝${NC}"
+        echo ""
+    fi
 
     # Check privileges (skip for dotfiles-only runs as regular user)
     if should_run_module "repos" || should_run_module "packages" || should_run_module "services"; then

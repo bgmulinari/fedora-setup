@@ -42,17 +42,22 @@ install_flatpaks() {
         return
     fi
 
-    log "Installing ${#apps[@]} Flatpak apps..."
+    local app_total=${#apps[@]}
+    log "Installing $app_total Flatpak apps..."
 
+    local app_count=0
     for app in "${apps[@]}"; do
+        ((app_count++))
+        tui_set_substep "Installing Flatpak $app_count/$app_total: $app"
         # Check if already installed
         if flatpak list --app 2>/dev/null | grep -q "$app"; then
             info "Already installed: $app"
         else
             info "Installing: $app"
-            flatpak install -y flathub "$app" || warn "Failed to install: $app"
+            flatpak install -y flathub "$app" >> "$LOG_FILE" 2>&1 || warn "Failed to install: $app"
         fi
     done
+    tui_set_substep ""
 }
 
 # Execute

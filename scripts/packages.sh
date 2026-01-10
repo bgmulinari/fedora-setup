@@ -41,26 +41,38 @@ install_packages() {
     # Install groups
     if [[ ${#groups[@]} -gt 0 ]]; then
         log "Installing package groups..."
+        local group_count=0
+        local group_total=${#groups[@]}
         for group in "${groups[@]}"; do
+            ((group_count++))
+            tui_set_substep "Installing group $group_count/$group_total: $group"
             info "Installing group: $group"
-            dnf group install -y "$group" || warn "Failed to install group: $group"
+            dnf group install -y "$group" >> "$LOG_FILE" 2>&1 || warn "Failed to install group: $group"
         done
     fi
 
     # Install packages
     if [[ ${#packages[@]} -gt 0 ]]; then
-        log "Installing ${#packages[@]} packages..."
+        local pkg_total=${#packages[@]}
+        log "Installing $pkg_total packages..."
+        tui_set_substep "Installing $pkg_total packages (batch mode)..."
 
         # Install all packages in one command for efficiency
-        dnf install -y "${packages[@]}" || {
+        if dnf install -y "${packages[@]}" >> "$LOG_FILE" 2>&1; then
+            tui_set_substep "All packages installed successfully"
+        else
             warn "Some packages failed to install, trying one by one..."
+            local pkg_count=0
             for pkg in "${packages[@]}"; do
-                dnf install -y "$pkg" || warn "Failed to install: $pkg"
+                ((pkg_count++))
+                tui_set_substep "Installing package $pkg_count/$pkg_total: $pkg"
+                dnf install -y "$pkg" >> "$LOG_FILE" 2>&1 || warn "Failed to install: $pkg"
             done
-        }
+        fi
     else
         info "No packages to install"
     fi
+    tui_set_substep ""
 }
 
 # Execute

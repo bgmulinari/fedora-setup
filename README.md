@@ -14,6 +14,7 @@ sudo ./setup.sh
 
 ## Features
 
+- **Progress TUI** - Visual split-view interface showing module progress and status
 - **Modular design** - Enable/disable components as needed
 - **Idempotent** - Safe to run multiple times
 - **Selective execution** - Run only specific modules with `--only` or `--skip`
@@ -25,6 +26,8 @@ sudo ./setup.sh
 ```
 fedora-setup/
 ├── setup.sh                 # Main entry point
+├── lib/
+│   └── tui.sh               # TUI library (progress display)
 ├── packages/
 │   ├── dnf-packages.txt     # DNF packages to install
 │   ├── flatpaks.txt         # Flatpak apps to install
@@ -54,7 +57,8 @@ fedora-setup/
 ## Usage
 
 ```bash
-sudo ./setup.sh                       # Run full setup
+sudo ./setup.sh                       # Run full setup (with TUI)
+sudo ./setup.sh --no-tui              # Run with plain text output
 sudo ./setup.sh --only repos,packages # Run specific modules
 sudo ./setup.sh --skip kde,services   # Skip specific modules
 ```

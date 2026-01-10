@@ -9,7 +9,8 @@ Bash-based automation for fresh Fedora (KDE Plasma) installations. Modular scrip
 ## Commands
 
 ```bash
-sudo ./setup.sh                       # Run full setup
+sudo ./setup.sh                       # Run full setup (with TUI)
+sudo ./setup.sh --no-tui              # Run with plain text output
 sudo ./setup.sh --only repos,packages # Run specific modules only
 sudo ./setup.sh --skip kde,services   # Skip specific modules
 ```
@@ -19,6 +20,7 @@ sudo ./setup.sh --skip kde,services   # Skip specific modules
 ## Architecture
 
 - `setup.sh` - Main orchestrator; exports shared functions (`log`, `warn`, `error`, `info`, `run_as_user`, `run_in_session`) and variables (`SCRIPT_DIR`, `LOG_FILE`, `ACTUAL_USER`, `ACTUAL_HOME`) to child scripts
+- `lib/tui.sh` - TUI library providing split-view terminal interface with progress tracking
 - `scripts/*.sh` - Module scripts sourced by setup.sh; each handles one concern
 - `packages/` - Plain text lists (one item per line, `#` for comments): `dnf-packages.txt`, `flatpaks.txt`, `copr-repos.txt`
 - `config/` - Configuration files: `dnf.conf`, `services.txt`, `kde-settings.sh`

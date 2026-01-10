@@ -16,6 +16,9 @@ manage_services() {
     fi
 
     local enabled_count=0
+    local svc_count=0
+    local svc_total
+    svc_total=$(grep -cve '^[[:space:]]*#' -e '^[[:space:]]*$' "$SERVICES_FILE" 2>/dev/null || echo 0)
 
     while IFS= read -r line || [[ -n "$line" ]]; do
         # Skip empty lines and comments
@@ -23,6 +26,7 @@ manage_services() {
 
         # Trim whitespace
         line=$(echo "$line" | xargs)
+        ((svc_count++))
 
         # Parse line: can be "service" or "service:action"
         # Actions: enable (default), disable, mask, unmask
@@ -34,6 +38,8 @@ manage_services() {
             service="$line"
             action="enable"
         fi
+
+        tui_set_substep "Configuring service $svc_count/$svc_total: $service ($action)"
 
         case "$action" in
             enable)
@@ -66,6 +72,7 @@ manage_services() {
                 ;;
         esac
     done < "$SERVICES_FILE"
+    tui_set_substep ""
 
     log "Enabled $enabled_count service(s)"
 }

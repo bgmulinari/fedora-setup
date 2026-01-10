@@ -11,24 +11,29 @@ COPR_FILE="$SCRIPT_DIR/packages/copr-repos.txt"
 # Enable RPM Fusion (Free and Non-Free)
 enable_rpmfusion() {
     log "Enabling RPM Fusion repositories..."
+    tui_set_substep "Enabling RPM Fusion Free..."
 
     # Check if already enabled
     if dnf repolist | grep -q "rpmfusion-free"; then
         info "RPM Fusion Free already enabled"
     else
         dnf install -y \
-            "https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm"
+            "https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm" \
+            >> "$LOG_FILE" 2>&1
     fi
 
+    tui_set_substep "Enabling RPM Fusion Non-Free..."
     if dnf repolist | grep -q "rpmfusion-nonfree"; then
         info "RPM Fusion Non-Free already enabled"
     else
         dnf install -y \
-            "https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm"
+            "https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm" \
+            >> "$LOG_FILE" 2>&1
     fi
 
     # Enable additional repos for appstream metadata
-    dnf config-manager setopt fedora-cisco-openh264.enabled=1 || true
+    tui_set_substep "Enabling Cisco OpenH264..."
+    dnf config-manager setopt fedora-cisco-openh264.enabled=1 >> "$LOG_FILE" 2>&1 || true
 
     log "RPM Fusion enabled successfully"
 }
@@ -36,10 +41,11 @@ enable_rpmfusion() {
 # Enable Flathub for Flatpak
 enable_flathub() {
     log "Enabling Flathub repository..."
+    tui_set_substep "Configuring Flathub..."
 
     # Ensure Flatpak is installed
     if ! command -v flatpak &> /dev/null; then
-        dnf install -y flatpak
+        dnf install -y flatpak >> "$LOG_FILE" 2>&1
     fi
 
     # Add Flathub remote
@@ -66,11 +72,12 @@ enable_copr_repos() {
 
         # Trim whitespace
         repo=$(echo "$repo" | xargs)
+        tui_set_substep "Enabling COPR: $repo"
 
         if dnf copr list | grep -q "$repo"; then
             info "COPR $repo already enabled"
         else
-            dnf copr enable -y "$repo"
+            dnf copr enable -y "$repo" >> "$LOG_FILE" 2>&1
             log "Enabled COPR: $repo"
         fi
     done < "$COPR_FILE"
@@ -107,14 +114,17 @@ apply_dnf_config() {
 # Run system update after repos are configured
 run_update() {
     log "Running system update..."
+    tui_set_substep "Updating system packages (this may take a while)..."
 
-    dnf update -y
+    dnf update -y >> "$LOG_FILE" 2>&1
+    tui_set_substep ""
     log "System update complete"
 }
 
 # Enable Visual Studio Code repository
 enable_vscode_repo() {
     log "Enabling Visual Studio Code repository..."
+    tui_set_substep "Configuring VS Code repository..."
 
     if [[ -f /etc/yum.repos.d/vscode.repo ]]; then
         info "VS Code repository already configured"
