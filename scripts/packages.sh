@@ -42,12 +42,8 @@ install_packages() {
     if [[ ${#groups[@]} -gt 0 ]]; then
         log "Installing package groups..."
         for group in "${groups[@]}"; do
-            if [[ "$DRY_RUN" == true ]]; then
-                info "[DRY RUN] Would install group: $group"
-            else
-                info "Installing group: $group"
-                dnf group install -y "$group" || warn "Failed to install group: $group"
-            fi
+            info "Installing group: $group"
+            dnf group install -y "$group" || warn "Failed to install group: $group"
         done
     fi
 
@@ -55,18 +51,13 @@ install_packages() {
     if [[ ${#packages[@]} -gt 0 ]]; then
         log "Installing ${#packages[@]} packages..."
 
-        if [[ "$DRY_RUN" == true ]]; then
-            info "[DRY RUN] Would install packages:"
-            printf '    %s\n' "${packages[@]}"
-        else
-            # Install all packages in one command for efficiency
-            dnf install -y "${packages[@]}" || {
-                warn "Some packages failed to install, trying one by one..."
-                for pkg in "${packages[@]}"; do
-                    dnf install -y "$pkg" || warn "Failed to install: $pkg"
-                done
-            }
-        fi
+        # Install all packages in one command for efficiency
+        dnf install -y "${packages[@]}" || {
+            warn "Some packages failed to install, trying one by one..."
+            for pkg in "${packages[@]}"; do
+                dnf install -y "$pkg" || warn "Failed to install: $pkg"
+            done
+        }
     else
         info "No packages to install"
     fi

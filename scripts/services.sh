@@ -37,45 +37,29 @@ manage_services() {
 
         case "$action" in
             enable)
-                if [[ "$DRY_RUN" == true ]]; then
-                    info "[DRY RUN] Would enable and start: $service"
+                if systemctl is-enabled "$service" &>/dev/null; then
+                    info "Already enabled: $service"
                 else
-                    if systemctl is-enabled "$service" &>/dev/null; then
-                        info "Already enabled: $service"
-                    else
-                        systemctl enable --now "$service" && {
-                            info "Enabled and started: $service"
-                            ((enabled_count++))
-                        } || warn "Failed to enable: $service"
-                    fi
+                    systemctl enable --now "$service" && {
+                        info "Enabled and started: $service"
+                        ((enabled_count++))
+                    } || warn "Failed to enable: $service"
                 fi
                 ;;
             disable)
-                if [[ "$DRY_RUN" == true ]]; then
-                    info "[DRY RUN] Would disable: $service"
-                else
-                    systemctl disable --now "$service" 2>/dev/null && \
-                        info "Disabled: $service" || \
-                        warn "Failed to disable: $service"
-                fi
+                systemctl disable --now "$service" 2>/dev/null && \
+                    info "Disabled: $service" || \
+                    warn "Failed to disable: $service"
                 ;;
             mask)
-                if [[ "$DRY_RUN" == true ]]; then
-                    info "[DRY RUN] Would mask: $service"
-                else
-                    systemctl mask "$service" && \
-                        info "Masked: $service" || \
-                        warn "Failed to mask: $service"
-                fi
+                systemctl mask "$service" && \
+                    info "Masked: $service" || \
+                    warn "Failed to mask: $service"
                 ;;
             unmask)
-                if [[ "$DRY_RUN" == true ]]; then
-                    info "[DRY RUN] Would unmask: $service"
-                else
-                    systemctl unmask "$service" && \
-                        info "Unmasked: $service" || \
-                        warn "Failed to unmask: $service"
-                fi
+                systemctl unmask "$service" && \
+                    info "Unmasked: $service" || \
+                    warn "Failed to unmask: $service"
                 ;;
             *)
                 warn "Unknown action '$action' for service: $service"
@@ -83,9 +67,7 @@ manage_services() {
         esac
     done < "$SERVICES_FILE"
 
-    if [[ "$DRY_RUN" != true ]]; then
-        log "Enabled $enabled_count service(s)"
-    fi
+    log "Enabled $enabled_count service(s)"
 }
 
 # Execute

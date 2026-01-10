@@ -12,11 +12,6 @@ COPR_FILE="$SCRIPT_DIR/packages/copr-repos.txt"
 enable_rpmfusion() {
     log "Enabling RPM Fusion repositories..."
 
-    if [[ "$DRY_RUN" == true ]]; then
-        info "[DRY RUN] Would enable RPM Fusion Free and Non-Free"
-        return
-    fi
-
     # Check if already enabled
     if dnf repolist | grep -q "rpmfusion-free"; then
         info "RPM Fusion Free already enabled"
@@ -41,11 +36,6 @@ enable_rpmfusion() {
 # Enable Flathub for Flatpak
 enable_flathub() {
     log "Enabling Flathub repository..."
-
-    if [[ "$DRY_RUN" == true ]]; then
-        info "[DRY RUN] Would enable Flathub"
-        return
-    fi
 
     # Ensure Flatpak is installed
     if ! command -v flatpak &> /dev/null; then
@@ -77,15 +67,11 @@ enable_copr_repos() {
         # Trim whitespace
         repo=$(echo "$repo" | xargs)
 
-        if [[ "$DRY_RUN" == true ]]; then
-            info "[DRY RUN] Would enable COPR: $repo"
+        if dnf copr list | grep -q "$repo"; then
+            info "COPR $repo already enabled"
         else
-            if dnf copr list | grep -q "$repo"; then
-                info "COPR $repo already enabled"
-            else
-                dnf copr enable -y "$repo"
-                log "Enabled COPR: $repo"
-            fi
+            dnf copr enable -y "$repo"
+            log "Enabled COPR: $repo"
         fi
     done < "$COPR_FILE"
 }
@@ -100,11 +86,6 @@ apply_dnf_config() {
     fi
 
     log "Applying custom DNF configuration..."
-
-    if [[ "$DRY_RUN" == true ]]; then
-        info "[DRY RUN] Would apply DNF config from $custom_conf"
-        return
-    fi
 
     # Backup existing config
     if [[ -f /etc/dnf/dnf.conf ]] && [[ ! -f /etc/dnf/dnf.conf.backup ]]; then
@@ -127,11 +108,6 @@ apply_dnf_config() {
 run_update() {
     log "Running system update..."
 
-    if [[ "$DRY_RUN" == true ]]; then
-        info "[DRY RUN] Would run: dnf update -y"
-        return
-    fi
-
     dnf update -y
     log "System update complete"
 }
@@ -142,12 +118,6 @@ enable_vscode_repo() {
 
     if [[ -f /etc/yum.repos.d/vscode.repo ]]; then
         info "VS Code repository already configured"
-        return
-    fi
-
-    if [[ "$DRY_RUN" == true ]]; then
-        info "[DRY RUN] Would import Microsoft GPG key"
-        info "[DRY RUN] Would create /etc/yum.repos.d/vscode.repo"
         return
     fi
 

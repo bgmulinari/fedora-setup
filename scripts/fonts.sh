@@ -18,14 +18,6 @@ if [[ -d "$FONT_SUBDIR" ]] && ls "$FONT_SUBDIR"/*.ttf &>/dev/null; then
     return 0
 fi
 
-# Dry-run mode
-if [[ "$DRY_RUN" == true ]]; then
-    info "[DRY RUN] Would download JetBrainsMono.zip from GitHub"
-    info "[DRY RUN] Would extract to $FONT_SUBDIR"
-    info "[DRY RUN] Would rebuild font cache"
-    return 0
-fi
-
 # Create font directory
 run_as_user mkdir -p "$FONT_SUBDIR"
 

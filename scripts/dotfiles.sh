@@ -17,14 +17,10 @@ install_stow() {
     fi
 
     log "Installing GNU Stow..."
-    if [[ "$DRY_RUN" == true ]]; then
-        info "[DRY RUN] Would install stow"
-    else
-        dnf install -y stow || {
-            error "Failed to install stow"
-            return 1
-        }
-    fi
+    dnf install -y stow || {
+        error "Failed to install stow"
+        return 1
+    }
 }
 
 # Run stow as the actual user
@@ -45,11 +41,7 @@ precreate_dirs() {
         local target_path="$TARGET_HOME/$rel_path"
 
         if [[ ! -e "$target_path" ]]; then
-            if [[ "$DRY_RUN" == true ]]; then
-                info "[DRY RUN] Would create directory: $target_path"
-            else
-                run_as_user mkdir -p "$target_path"
-            fi
+            run_as_user mkdir -p "$target_path"
         fi
     done
 }
@@ -73,22 +65,14 @@ stow_package() {
     # Pre-create parent directories to ensure file-level symlinks
     precreate_dirs "$package_dir"
 
-    if [[ "$DRY_RUN" == true ]]; then
-        info "[DRY RUN] Would stow package: $package"
-        # Show what would be linked
-        run_stow -n -v -d "$DOTFILES_DIR" -t "$TARGET_HOME" "$package" 2>&1 | while read -r line; do
-            info "  $line"
-        done
-    else
-        info "Stowing package: $package"
-        # Use --restow to handle updates, --adopt to take ownership of existing files
-        if ! run_stow -v -d "$DOTFILES_DIR" -t "$TARGET_HOME" --restow "$package" 2>&1; then
-            warn "Conflict detected for $package. Trying with --adopt..."
-            run_stow -v -d "$DOTFILES_DIR" -t "$TARGET_HOME" --adopt --restow "$package" || {
-                error "Failed to stow package: $package"
-                return 1
-            }
-        fi
+    info "Stowing package: $package"
+    # Use --restow to handle updates, --adopt to take ownership of existing files
+    if ! run_stow -v -d "$DOTFILES_DIR" -t "$TARGET_HOME" --restow "$package" 2>&1; then
+        warn "Conflict detected for $package. Trying with --adopt..."
+        run_stow -v -d "$DOTFILES_DIR" -t "$TARGET_HOME" --adopt --restow "$package" || {
+            error "Failed to stow package: $package"
+            return 1
+        }
     fi
 }
 
@@ -96,14 +80,10 @@ stow_package() {
 unstow_package() {
     local package="$1"
 
-    if [[ "$DRY_RUN" == true ]]; then
-        info "[DRY RUN] Would unstow package: $package"
-    else
-        info "Unstowing package: $package"
-        run_stow -v -d "$DOTFILES_DIR" -t "$TARGET_HOME" -D "$package" || {
-            warn "Failed to unstow package: $package"
-        }
-    fi
+    info "Unstowing package: $package"
+    run_stow -v -d "$DOTFILES_DIR" -t "$TARGET_HOME" -D "$package" || {
+        warn "Failed to unstow package: $package"
+    }
 }
 
 # Main function to stow all packages

@@ -2,31 +2,4 @@
 # Add one repo per line in format: username/reponame
 # Lines starting with # are comments
 
-# ═══════════════════════════════════════════════════════════════
-# POPULAR COPR REPOS
-# ═══════════════════════════════════════════════════════════════
-
-# lazygit - simple terminal UI for git commands
-# atim/lazygit
-
-# lazydocker - terminal UI for docker
-# atim/lazydocker
-
-# starship - cross-shell prompt
-# atim/starship
-
-# bottom (btm) - graphical process/system monitor
-# atim/bottom
-
-# zoxide - smarter cd command
-# atim/zoxide
-
-# eza - modern ls replacement
-# varlad/eza
-
-# helix - post-modern text editor
-# varlad/helix
-
-# ghostty - fast, feature-rich terminal emulator
 scottames/ghostty
-

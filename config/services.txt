@@ -3,39 +3,3 @@
 # Format: service_name or service_name:action
 # Actions: enable (default), disable, mask, unmask
 # Lines starting with # are comments
-
-# ═══════════════════════════════════════════════════════════════
-# COMMON SERVICES TO ENABLE
-# ═══════════════════════════════════════════════════════════════
-
-# SSH server
-# sshd
-
-# Firewall
-# firewalld
-
-# Bluetooth
-# bluetooth
-
-# CUPS printing
-# cups
-
-# libvirt (virtualization)
-# libvirtd
-
-# Podman socket (for Docker compatibility)
-# podman.socket
-
-# Syncthing (file sync)
-# syncthing@$USER
-
-# ═══════════════════════════════════════════════════════════════
-# SERVICES TO DISABLE (uncomment if needed)
-# ═══════════════════════════════════════════════════════════════
-
-# Disable Avahi (mDNS - if not needed)
-# avahi-daemon:disable
-
-# Disable ModemManager (if no mobile broadband)
-# ModemManager:disable
-

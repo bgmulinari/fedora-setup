@@ -11,20 +11,12 @@ FLATPAKS_FILE="$SCRIPT_DIR/packages/flatpaks.txt"
 install_flatpaks() {
     # Check if Flatpak is installed
     if ! command -v flatpak &> /dev/null; then
-        if [[ "$DRY_RUN" == true ]]; then
-            info "[DRY RUN] Would install flatpak"
-        else
-            dnf install -y flatpak
-        fi
+        dnf install -y flatpak
     fi
 
     # Check if Flathub is configured
     if ! flatpak remotes 2>/dev/null | grep -q "flathub"; then
-        if [[ "$DRY_RUN" == true ]]; then
-            info "[DRY RUN] Would add Flathub remote"
-        else
-            flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
-        fi
+        flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
     fi
 
     if [[ ! -f "$FLATPAKS_FILE" ]]; then
@@ -53,16 +45,12 @@ install_flatpaks() {
     log "Installing ${#apps[@]} Flatpak apps..."
 
     for app in "${apps[@]}"; do
-        if [[ "$DRY_RUN" == true ]]; then
-            info "[DRY RUN] Would install: $app"
+        # Check if already installed
+        if flatpak list --app 2>/dev/null | grep -q "$app"; then
+            info "Already installed: $app"
         else
-            # Check if already installed
-            if flatpak list --app 2>/dev/null | grep -q "$app"; then
-                info "Already installed: $app"
-            else
-                info "Installing: $app"
-                flatpak install -y flathub "$app" || warn "Failed to install: $app"
-            fi
+            info "Installing: $app"
+            flatpak install -y flathub "$app" || warn "Failed to install: $app"
         fi
     done
 }

@@ -39,11 +39,6 @@ fi
 
 # Run kwriteconfig in user's session context
 run_kwrite() {
-    if [[ "$DRY_RUN" == true ]]; then
-        info "[DRY RUN] Would run: $KWRITE $*"
-        return
-    fi
-
     info "Applying settings via user session..."
     run_in_session "$KWRITE" "$@"
 }
@@ -66,11 +61,6 @@ run_lookandfeel() {
         return 1
     fi
 
-    if [[ "$DRY_RUN" == true ]]; then
-        info "[DRY RUN] Would apply theme: $theme"
-        return
-    fi
-
     info "Applying theme via user session..."
     run_in_session "$LOOKANDFEEL" -a "$theme"
 }
@@ -81,12 +71,8 @@ apply_custom_kde_settings() {
 
     if [[ -f "$kde_script" ]]; then
         log "Applying custom KDE settings from $kde_script"
-        if [[ "$DRY_RUN" == true ]]; then
-            info "[DRY RUN] Would source: $kde_script"
-        else
-            # shellcheck source=/dev/null
-            source "$kde_script"
-        fi
+        # shellcheck source=/dev/null
+        source "$kde_script"
     else
         info "No custom KDE settings file found at $kde_script"
     fi

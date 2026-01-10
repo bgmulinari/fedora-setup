@@ -1,17 +1,14 @@
 # Fedora Auto-Setup
 
-Automated setup script for fresh Fedora (KDE Plasma) installations. Install all your packages, configure repositories, manage dotfiles, and apply system settings in one command.
+Automated setup script for fresh Fedora (KDE Plasma) installations. Install packages, configure repositories, manage dotfiles, and apply system settings in one command.
 
 ## Quick Start
 
 ```bash
-# Clone/download this repo to your new system
 git clone https://github.com/YOUR_USERNAME/fedora-setup.git
 cd fedora-setup
 
-# 1. Customize your package lists (see Configuration below)
-# 2. Add your dotfiles to the dotfiles/ directory
-# 3. Run the setup
+# Customize package lists, then run:
 sudo ./setup.sh
 ```
 
@@ -19,8 +16,7 @@ sudo ./setup.sh
 
 - **Modular design** - Enable/disable components as needed
 - **Idempotent** - Safe to run multiple times
-- **Dry-run mode** - Preview changes before applying
-- **Selective execution** - Run only specific modules
+- **Selective execution** - Run only specific modules with `--only` or `--skip`
 - **GNU Stow dotfiles** - Industry-standard symlink management
 - **Logged output** - All actions saved to `setup.log`
 
@@ -34,65 +30,47 @@ fedora-setup/
 │   ├── flatpaks.txt         # Flatpak apps to install
 │   └── copr-repos.txt       # COPR repositories to enable
 ├── dotfiles/                # Stow-managed dotfiles
-│   ├── bash/                # Example: bash configs
-│   ├── git/                 # Example: git configs
-│   └── nvim/                # Example: neovim configs
+│   ├── bash/                # Bash configs (.bashrc.d/)
+│   ├── claude/              # Claude Code settings
+│   └── konsole/             # Konsole terminal profiles
 ├── config/
 │   ├── dnf.conf             # DNF performance settings
-│   ├── services.txt         # Systemd services to enable
+│   ├── services.txt         # Systemd services to manage
 │   └── kde-settings.sh      # KDE Plasma customizations
-└── scripts/                 # Module scripts (auto-executed)
-    ├── repos.sh             # Repository setup
-    ├── packages.sh          # DNF installation
+└── scripts/                 # Module scripts
+    ├── repos.sh             # Repository setup (RPM Fusion, Flathub, COPR)
+    ├── packages.sh          # DNF package installation
     ├── flatpaks.sh          # Flatpak installation
     ├── dotnet.sh            # .NET SDK installation
     ├── jetbrains.sh         # JetBrains Toolbox installation
     ├── claude.sh            # Claude Code CLI installation
     ├── docker.sh            # Docker Engine installation
-    ├── dotfiles.sh          # Stow dotfiles
+    ├── fonts.sh             # JetBrainsMono Nerd Font installation
+    ├── dotfiles.sh          # GNU Stow dotfiles
     ├── kde.sh               # KDE configuration
-    └── services.sh          # Service management
+    └── services.sh          # Systemd service management
 ```
 
 ## Usage
 
-### Full Setup
-
 ```bash
-sudo ./setup.sh
-```
-
-### Dry Run (Preview Changes)
-
-```bash
-sudo ./setup.sh --dry-run
-```
-
-### Run Specific Modules Only
-
-```bash
-sudo ./setup.sh --only repos,packages
-sudo ./setup.sh --only dotfiles,kde
-```
-
-### Skip Specific Modules
-
-```bash
-sudo ./setup.sh --skip flatpaks
-sudo ./setup.sh --skip kde,services
+sudo ./setup.sh                       # Run full setup
+sudo ./setup.sh --only repos,packages # Run specific modules
+sudo ./setup.sh --skip kde,services   # Skip specific modules
 ```
 
 ### Available Modules
 
 | Module | Description |
 |--------|-------------|
-| `repos` | Enable RPM Fusion, Flathub, and COPR repositories |
+| `repos` | Enable RPM Fusion, Flathub, COPR repos, VS Code repo |
 | `packages` | Install DNF packages from `packages/dnf-packages.txt` |
 | `flatpaks` | Install Flatpak apps from `packages/flatpaks.txt` |
 | `dotnet` | Install .NET SDK to `~/.dotnet` |
 | `jetbrains` | Install JetBrains Toolbox App |
 | `claude` | Install Claude Code CLI |
-| `docker` | Install Docker Engine from official repository |
+| `docker` | Install Docker Engine, add user to docker group |
+| `fonts` | Install JetBrainsMono Nerd Font |
 | `dotfiles` | Symlink dotfiles using GNU Stow |
 | `kde` | Apply KDE Plasma settings |
 | `services` | Enable/disable systemd services |
@@ -101,28 +79,25 @@ sudo ./setup.sh --skip kde,services
 
 ### DNF Packages
 
-Edit `packages/dnf-packages.txt` - one package per line:
+Edit `packages/dnf-packages.txt`:
 
 ```bash
-# Development tools
-git
-neovim
-nodejs
+# One package per line
+code
+gh
+fastfetch
 
-# Package groups (prefix with @)
+# Package groups use @ prefix
 @development-tools
-
-# Comments start with #
 ```
 
 ### Flatpak Apps
 
-Edit `packages/flatpaks.txt` - one app ID per line:
+Edit `packages/flatpaks.txt`:
 
 ```bash
 com.spotify.Client
 com.discordapp.Discord
-com.visualstudio.code
 ```
 
 Find app IDs at [Flathub](https://flathub.org).
@@ -132,40 +107,8 @@ Find app IDs at [Flathub](https://flathub.org).
 Edit `packages/copr-repos.txt`:
 
 ```bash
+scottames/ghostty
 atim/lazygit
-atim/starship
-```
-
-### Dotfiles (GNU Stow)
-
-Each subdirectory in `dotfiles/` is a "stow package" that mirrors your home directory:
-
-```
-dotfiles/
-├── bash/
-│   └── .bashrc              → symlinks to ~/.bashrc
-├── nvim/
-│   └── .config/
-│       └── nvim/
-│           └── init.lua     → symlinks to ~/.config/nvim/init.lua
-└── git/
-    └── .gitconfig           → symlinks to ~/.gitconfig
-```
-
-**Adding your existing dotfiles:**
-
-```bash
-# Create a package for bash
-mkdir -p dotfiles/bash
-cp ~/.bashrc dotfiles/bash/
-
-# Create a package for neovim
-mkdir -p dotfiles/nvim/.config/nvim
-cp -r ~/.config/nvim/* dotfiles/nvim/.config/nvim/
-
-# Create a package for git
-mkdir -p dotfiles/git
-cp ~/.gitconfig dotfiles/git/
 ```
 
 ### Systemd Services
@@ -173,137 +116,45 @@ cp ~/.gitconfig dotfiles/git/
 Edit `config/services.txt`:
 
 ```bash
-# Enable and start services
-sshd
-docker
-libvirtd
-
-# Disable services (append :disable)
-cups:disable
-
-# Mask services (append :mask)
-ModemManager:mask
+sshd                  # Enable and start
+cups:disable          # Disable
+ModemManager:mask     # Mask
 ```
 
 ### KDE Plasma Settings
 
-Edit `config/kde-settings.sh` to customize your desktop:
+Edit `config/kde-settings.sh`:
 
 ```bash
-# Set global theme (recommended - applies instantly)
-# Available: org.kde.breeze.desktop, org.kde.breezedark.desktop,
-#            org.fedoraproject.fedora.desktop, org.fedoraproject.fedoradark.desktop
+# Global theme
 run_lookandfeel "org.fedoraproject.fedoradark.desktop"
 
-# Individual settings (alternative to global theme):
-run_kwrite --file kdeglobals --group General --key ColorScheme "BreezeDark"
-run_kwrite --file kdeglobals --group Icons --key Theme "Papirus-Dark"
-run_kwrite --file kdeglobals --group KDE --key SingleClick "false"
+# Fixed-width font
+run_kwrite --file kdeglobals --group General --key fixed "JetBrainsMono Nerd Font,10"
+
+# Default terminal
+run_kwrite --file kdeglobals --group General --key TerminalApplication "ghostty"
 ```
 
-### DNF Optimization
+### Dotfiles (GNU Stow)
 
-The `config/dnf.conf` settings are automatically applied:
+Each subdirectory in `dotfiles/` mirrors your home directory:
 
-```ini
-fastestmirror=True
-max_parallel_downloads=10
-defaultyes=True
-keepcache=True
 ```
-
-## What Gets Installed
-
-By default, the script:
-
-1. **Repositories** - Enables RPM Fusion (free + nonfree), Flathub, and your COPR repos
-2. **System Update** - Runs `dnf update` after configuring repos
-3. **DNF Packages** - Installs everything in `dnf-packages.txt`
-4. **Flatpaks** - Installs everything in `flatpaks.txt`
-5. **.NET SDK** - Installs to `~/.dotnet` using Microsoft's official installer
-6. **JetBrains Toolbox** - Downloads and installs to `~/.local/share/JetBrains/Toolbox`
-7. **Claude Code** - Installs the Claude Code CLI to `~/.local/bin`
-8. **Docker** - Installs Docker Engine from official Docker repository, adds user to docker group
-9. **Dotfiles** - Symlinks all stow packages to your home directory
-10. **KDE Settings** - Applies your desktop customizations
-11. **Services** - Enables/disables systemd services
-
-## Version Control Tips
-
-### Initial Setup
-
-```bash
-cd fedora-setup
-git init
-git add .
-git commit -m "Initial setup configuration"
-git remote add origin git@github.com:YOUR_USERNAME/fedora-setup.git
-git push -u origin main
-```
-
-### .gitignore Recommendations
-
-```gitignore
-# Logs
-*.log
-
-# Sensitive files (if any)
-dotfiles/**/credentials*
-dotfiles/**/*.key
-
-# OS files
-.DS_Store
-```
-
-### Keeping Dotfiles in Sync
-
-After making changes to your configs on your system:
-
-```bash
-# Your dotfiles are symlinks, so changes are already in the repo!
-cd fedora-setup
-git status
-git add -A
-git commit -m "Update configs"
-git push
+dotfiles/bash/.bashrc.d/dotnet  →  ~/.bashrc.d/dotnet
+dotfiles/claude/.claude.json    →  ~/.claude.json
 ```
 
 ## Troubleshooting
 
-### View Logs
-
 ```bash
-cat setup.log
-```
-
-### Stow Conflicts
-
-If Stow reports conflicts, it means files already exist. Use `--adopt` to pull them in:
-
-```bash
-cd fedora-setup
-stow -v -d dotfiles -t ~ --adopt bash
-```
-
-### Re-run Specific Modules
-
-```bash
-sudo ./setup.sh --only packages
-```
-
-### Check What Would Happen
-
-```bash
-sudo ./setup.sh --dry-run
+cat setup.log                         # View logs
+sudo ./setup.sh --only packages       # Re-run specific module
+stow -d dotfiles -t ~ --adopt bash    # Resolve stow conflicts
 ```
 
 ## Requirements
 
-- Fedora (tested on Fedora 39+)
-- KDE Plasma (for the kde module)
+- Fedora 39+ (KDE Plasma)
 - Internet connection
 - Root/sudo access
-
-## License
-
-MIT License - Feel free to fork and customize!

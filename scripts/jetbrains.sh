@@ -20,16 +20,6 @@ if [[ -x "$TOOLBOX_BIN" ]]; then
     return 0
 fi
 
-# Dry-run mode
-if [[ "$DRY_RUN" == true ]]; then
-    info "[DRY RUN] Would fetch latest version from JetBrains API"
-    info "[DRY RUN] Would download JetBrains Toolbox tarball"
-    info "[DRY RUN] Would extract to $TOOLBOX_DIR"
-    info "[DRY RUN] Would create symlink at $TOOLBOX_SYMLINK"
-    info "[DRY RUN] Would launch Toolbox to initialize .desktop file"
-    return 0
-fi
-
 # Fetch download URL from API
 log "Fetching latest JetBrains Toolbox version..."
 API_RESPONSE=$(curl -fsSL "$RELEASES_API") || {

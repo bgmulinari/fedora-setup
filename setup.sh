@@ -66,7 +66,6 @@ run_in_session() {
 ALL_MODULES="repos packages flatpaks dotnet jetbrains claude docker fonts dotfiles kde services"
 
 # Default settings
-DRY_RUN=false
 SKIP_MODULES=""
 ONLY_MODULES=""
 
@@ -79,7 +78,6 @@ Fedora Auto-Setup Script
 
 OPTIONS:
     -h, --help          Show this help message
-    -n, --dry-run       Show what would be done without making changes
     --skip MODULES      Skip specified modules (comma-separated)
     --only MODULES      Run only specified modules (comma-separated)
 
@@ -97,7 +95,6 @@ MODULES:
 
 EXAMPLES:
     $(basename "$0")                      # Run full setup
-    $(basename "$0") --dry-run            # Preview changes
     $(basename "$0") --only repos,packages
     $(basename "$0") --skip flatpaks,kde
 
@@ -110,10 +107,6 @@ parse_args() {
         case $1 in
             -h|--help)
                 usage
-                ;;
-            -n|--dry-run)
-                DRY_RUN=true
-                shift
                 ;;
             --skip)
                 SKIP_MODULES="$2"
@@ -171,12 +164,8 @@ run_module() {
 
     log "Running module: $module"
 
-    if [[ "$DRY_RUN" == true ]]; then
-        info "[DRY RUN] Would execute: $script"
-    else
-        # shellcheck source=/dev/null
-        source "$script"
-    fi
+    # shellcheck source=/dev/null
+    source "$script"
 }
 
 # Check for root/sudo
@@ -188,7 +177,7 @@ check_privileges() {
 }
 
 # Export variables and functions for child scripts
-export SCRIPT_DIR LOG_FILE DRY_RUN ACTUAL_USER ACTUAL_HOME
+export SCRIPT_DIR LOG_FILE ACTUAL_USER ACTUAL_HOME
 export -f log warn error info run_as_user run_in_session
 
 # Main execution
@@ -200,11 +189,6 @@ main() {
     echo -e "${BLUE}║     Fedora Auto-Setup Script             ║${NC}"
     echo -e "${BLUE}╚══════════════════════════════════════════╝${NC}"
     echo ""
-
-    if [[ "$DRY_RUN" == true ]]; then
-        warn "DRY RUN MODE - No changes will be made"
-        echo ""
-    fi
 
     # Log start
     echo "=== Setup started at $(date) ===" >> "$LOG_FILE"
@@ -233,7 +217,7 @@ main() {
     info "Log file: $LOG_FILE"
 
     # Prompt for reboot if system packages were installed
-    if should_run_module "packages" && [[ "$DRY_RUN" != true ]]; then
+    if should_run_module "packages"; then
         echo ""
         read -rp "Reboot now? [y/N] " response
         if [[ "$response" =~ ^[Yy]$ ]]; then

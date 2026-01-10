@@ -13,11 +13,6 @@ if [[ -x "$CLAUDE_BIN" ]]; then
     return 0
 fi
 
-if [[ "$DRY_RUN" == true ]]; then
-    info "[DRY RUN] Would download and run Claude Code installer"
-    return 0
-fi
-
 log "Installing Claude Code..."
 run_as_user bash -c 'curl -fsSL https://claude.ai/install.sh | bash' || {
     error "Failed to install Claude Code"

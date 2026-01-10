@@ -16,11 +16,6 @@ remove_conflicting_packages() {
         docker-selinux docker-engine-selinux docker-engine
     )
 
-    if [[ "$DRY_RUN" == true ]]; then
-        info "[DRY RUN] Would remove conflicting packages: ${conflicts[*]}"
-        return
-    fi
-
     dnf remove -y "${conflicts[@]}" 2>/dev/null || true
 }
 
@@ -30,11 +25,6 @@ add_docker_repo() {
 
     if dnf repolist | grep -q "docker-ce"; then
         info "Docker repository already configured"
-        return
-    fi
-
-    if [[ "$DRY_RUN" == true ]]; then
-        info "[DRY RUN] Would add Docker CE repository"
         return
     fi
 
@@ -53,11 +43,6 @@ install_docker() {
         return
     fi
 
-    if [[ "$DRY_RUN" == true ]]; then
-        info "[DRY RUN] Would install: ${packages[*]}"
-        return
-    fi
-
     dnf install -y "${packages[@]}"
     log "Docker installed successfully"
 }
@@ -65,11 +50,6 @@ install_docker() {
 # Enable and start Docker service
 enable_docker_service() {
     log "Enabling Docker service..."
-
-    if [[ "$DRY_RUN" == true ]]; then
-        info "[DRY RUN] Would enable and start docker service"
-        return
-    fi
 
     # Reload systemd to recognize new unit files
     systemctl daemon-reload
@@ -95,11 +75,6 @@ add_user_to_docker_group() {
 
     if id -nG "$actual_user" | grep -qw docker; then
         info "User $actual_user already in docker group"
-        return
-    fi
-
-    if [[ "$DRY_RUN" == true ]]; then
-        info "[DRY RUN] Would add $actual_user to docker group"
         return
     fi
 
