@@ -25,8 +25,12 @@ install_kde_theme() {
     # Install components separately using debug modes to skip cursor
     # Args: Flavor=1(Mocha), Accent=13(Blue), WindowDec=2(Classic)
     run_as_user bash -c "cd '$tmp_dir' && ./install.sh 1 13 2 global"   # Global theme + splash
-    run_as_user bash -c "cd '$tmp_dir' && ./install.sh 1 13 2 color"    # Color schemes
     run_as_user bash -c "cd '$tmp_dir' && ./install.sh 1 13 2 aurorae"  # Window decorations (Classic)
+
+    # Color scheme: build then manually install (installer bug: debug mode doesn't install)
+    run_as_user bash -c "cd '$tmp_dir' && ./install.sh 1 13 2 color"
+    run_as_user mkdir -p "$CATPPUCCIN_DIR/color-schemes"
+    run_as_user bash -c "mv '$tmp_dir/dist/CatppuccinMochaBlue.colors' '$CATPPUCCIN_DIR/color-schemes/'"
     # Note: cursor mode intentionally skipped
 
     rm -rf "$tmp_dir"
