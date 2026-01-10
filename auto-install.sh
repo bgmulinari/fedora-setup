@@ -1,6 +1,6 @@
 #!/bin/bash
 # Auto-install script for fedora-setup
-# Usage: sh <(curl -L https://raw.githubusercontent.com/bgmulinari/fedora-setup/main/auto-install.sh)
+# Usage: sh <(curl -L https://raw.githubusercontent.com/bgmulinari/fedora-setup/master/auto-install.sh)
 
 set -euo pipefail
 

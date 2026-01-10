@@ -10,7 +10,7 @@ Bash-based automation for fresh Fedora (KDE Plasma) installations. Modular scrip
 
 ```bash
 # Remote install (no local clone needed)
-sh <(curl -L https://raw.githubusercontent.com/bgmulinari/fedora-setup/main/auto-install.sh)
+sh <(curl -L https://raw.githubusercontent.com/bgmulinari/fedora-setup/master/auto-install.sh)
 
 # Local install
 sudo ./setup.sh                       # Run full setup (with TUI)

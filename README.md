@@ -7,7 +7,7 @@ Automated setup script for fresh Fedora (KDE Plasma) installations. Install pack
 **One-liner install** (clones to `~/fedora-setup` and runs setup):
 
 ```bash
-sh <(curl -L https://raw.githubusercontent.com/bgmulinari/fedora-setup/main/auto-install.sh)
+sh <(curl -L https://raw.githubusercontent.com/bgmulinari/fedora-setup/master/auto-install.sh)
 ```
 
 **Manual install:**
