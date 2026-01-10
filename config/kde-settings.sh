@@ -37,10 +37,12 @@ run_lookandfeel "org.fedoraproject.fedoradark.desktop"
 run_kwrite --file kdeglobals --group General --key fixed "JetBrainsMono Nerd Font,10,-1,5,50,0,0,0,0,0"
 
 # ═══════════════════════════════════════════════════════════════
-# KONSOLE
+# TERMINAL
 # ═══════════════════════════════════════════════════════════════
 
-# Default Konsole profile is set via ~/.local/share/konsole/ profiles
+# Default terminal emulator (both keys needed for full KDE integration)
+run_kwrite --file kdeglobals --group General --key TerminalApplication "ghostty"
+run_kwrite --file kdeglobals --group General --key TerminalService "com.mitchellh.ghostty.desktop"
 
 # ═══════════════════════════════════════════════════════════════
 # SHORTCUTS
