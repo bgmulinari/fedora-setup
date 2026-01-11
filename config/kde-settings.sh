@@ -12,6 +12,9 @@ run_lookandfeel "Catppuccin-Mocha-Blue"
 run_kwrite --file gtk-3.0/settings.ini --group Settings --key gtk-theme-name "catppuccin-mocha-blue-standard+default"
 run_kwrite --file gtk-4.0/settings.ini --group Settings --key gtk-theme-name "catppuccin-mocha-blue-standard+default"
 
+# Icon theme - Papirus Dark with breeze folders
+run_kwrite --file kdeglobals --group Icons --key Theme "Papirus-Dark"
+
 # Fixed-width font
 run_kwrite --file kdeglobals --group General --key fixed "JetBrainsMono Nerd Font,10,-1,5,50,0,0,0,0,0"
 

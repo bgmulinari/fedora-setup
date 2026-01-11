@@ -20,7 +20,7 @@ sudo ./setup.sh --only repos,packages # Run specific modules only
 sudo ./setup.sh --skip kde,services   # Skip specific modules
 ```
 
-**Modules** (execution order): repos, multimedia, packages, flatpaks, dotnet, jetbrains, claude, docker, fonts, catppuccin, dotfiles, kde, services
+**Modules** (execution order): repos, multimedia, packages, flatpaks, dotnet, jetbrains, claude, docker, fonts, catppuccin, icons, dotfiles, kde, services
 
 ## Architecture
 

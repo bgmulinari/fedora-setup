@@ -66,7 +66,7 @@ run_in_session() {
 }
 
 # Available modules
-ALL_MODULES="repos multimedia packages flatpaks dotnet jetbrains claude docker fonts catppuccin dotfiles kde services"
+ALL_MODULES="repos multimedia packages flatpaks dotnet jetbrains claude docker fonts catppuccin icons dotfiles kde services"
 
 # Source TUI library (after ALL_MODULES is defined)
 source "$SCRIPT_DIR/lib/tui.sh"
@@ -281,6 +281,7 @@ main() {
     run_module "docker"
     run_module "fonts"
     run_module "catppuccin"
+    run_module "icons"
     run_module "dotfiles"
     run_module "kde"
     run_module "services"

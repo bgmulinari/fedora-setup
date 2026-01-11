@@ -61,6 +61,7 @@ fedora-setup/
     ├── docker.sh            # Docker Engine installation
     ├── fonts.sh             # JetBrainsMono Nerd Font and Microsoft fonts
     ├── catppuccin.sh        # Catppuccin theme installation
+    ├── icons.sh             # Icon theme installation (Papirus)
     ├── dotfiles.sh          # GNU Stow dotfiles
     ├── kde.sh               # KDE configuration
     └── services.sh          # Systemd service management
@@ -90,6 +91,7 @@ sudo ./setup.sh --skip kde,services   # Skip specific modules
 | `docker` | Install Docker Engine, add user to docker group |
 | `fonts` | Install JetBrainsMono Nerd Font and Microsoft core fonts |
 | `catppuccin` | Install Catppuccin Mocha theme (KDE, GTK, VS Code, btop) |
+| `icons` | Install Papirus icon theme with breeze folders |
 | `dotfiles` | Symlink dotfiles using GNU Stow |
 | `kde` | Apply KDE Plasma settings (Catppuccin theme) |
 | `services` | Enable/disable systemd services |
