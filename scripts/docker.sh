@@ -64,22 +64,20 @@ enable_docker_service() {
 
 # Add user to docker group
 add_user_to_docker_group() {
-    local actual_user="${SUDO_USER:-$USER}"
-
-    if [[ -z "$actual_user" || "$actual_user" == "root" ]]; then
+    if [[ -z "$ACTUAL_USER" || "$ACTUAL_USER" == "root" ]]; then
         warn "Cannot determine non-root user for docker group"
         return
     fi
 
-    log "Adding $actual_user to docker group..."
+    log "Adding $ACTUAL_USER to docker group..."
 
-    if id -nG "$actual_user" | grep -qw docker; then
-        info "User $actual_user already in docker group"
+    if id -nG "$ACTUAL_USER" | grep -qw docker; then
+        info "User $ACTUAL_USER already in docker group"
         return
     fi
 
-    usermod -aG docker "$actual_user"
-    info "Added $actual_user to docker group (re-login required)"
+    usermod -aG docker "$ACTUAL_USER"
+    info "Added $ACTUAL_USER to docker group (re-login required)"
 }
 
 # Execute

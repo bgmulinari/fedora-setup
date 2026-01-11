@@ -52,13 +52,25 @@ apply_conditional_resource_settings() {
     fi
 }
 
-# Apply terminal and keybind settings
-apply_keybind_settings() {
-    log "Applying terminal and keybind settings..."
+# Apply terminal settings (only if Ghostty is installed)
+apply_terminal_settings() {
+    if ! command -v ghostty &>/dev/null; then
+        info "Ghostty not installed, skipping terminal settings"
+        return 0
+    fi
 
-    # Default terminal emulator
+    log "Applying terminal settings..."
     kde_write --file kdeglobals --group General --key TerminalApplication "ghostty"
     kde_write --file kdeglobals --group General --key TerminalService "com.mitchellh.ghostty.desktop"
+
+    # Terminal shortcut: Meta+Return
+    kde_write --file kglobalshortcutsrc --group services \
+        --group com.mitchellh.ghostty.desktop --key "_launch" "Meta+Return"
+}
+
+# Apply virtual desktop keybindings
+apply_keybind_settings() {
+    log "Applying keybind settings..."
 
     # Unbind Meta+[1-9] from task manager
     local i
@@ -72,14 +84,11 @@ apply_keybind_settings() {
         kde_write --file kglobalshortcutsrc --group kwin \
             --key "Switch to Desktop $i" "Meta+$i,Ctrl+F$i,Switch to Desktop $i"
     done
-
-    # Terminal shortcut: Meta+Return
-    kde_write --file kglobalshortcutsrc --group services \
-        --group com.mitchellh.ghostty.desktop --key "_launch" "Meta+Return"
 }
 
 # Execute
 apply_conditional_resource_settings
+apply_terminal_settings
 apply_keybind_settings
 
 log "KDE Plasma configuration complete!"

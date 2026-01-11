@@ -48,8 +48,7 @@ fedora-setup/
 │   ├── nvim/                # Neovim config (LazyVim)
 │   └── vscode/              # VS Code settings
 ├── config/
-│   ├── dnf.conf             # DNF performance settings
-│   └── services.txt         # Systemd services to manage
+│   └── dnf.conf             # DNF performance settings
 └── scripts/                 # Module scripts
     ├── repos.sh             # Repository setup (RPM Fusion, Flathub, COPR)
     ├── multimedia.sh        # Video codecs and hardware acceleration
@@ -63,8 +62,7 @@ fedora-setup/
     ├── catppuccin.sh        # Catppuccin theme installation
     ├── icons.sh             # Icon theme installation (Papirus)
     ├── dotfiles.sh          # GNU Stow dotfiles
-    ├── kde.sh               # KDE configuration
-    └── services.sh          # Systemd service management
+    └── kde.sh               # KDE configuration
 ```
 
 ## Usage
@@ -74,7 +72,7 @@ sudo ./setup.sh                       # Run full setup (with TUI)
 sudo ./setup.sh -y                    # Skip confirmation prompt
 sudo ./setup.sh --no-tui              # Run with plain text output
 sudo ./setup.sh --only repos,packages # Run specific modules
-sudo ./setup.sh --skip kde,services   # Skip specific modules
+sudo ./setup.sh --skip kde            # Skip specific modules
 ```
 
 ### Available Modules
@@ -94,7 +92,6 @@ sudo ./setup.sh --skip kde,services   # Skip specific modules
 | `icons` | Install and apply Papirus icon theme with breeze folders |
 | `dotfiles` | Symlink dotfiles using GNU Stow |
 | `kde` | Apply KDE keybindings and terminal settings |
-| `services` | Enable/disable systemd services |
 
 ## Configuration
 
@@ -133,16 +130,6 @@ Edit `packages/copr-repos.txt`:
 ```bash
 scottames/ghostty
 atim/lazygit
-```
-
-### Systemd Services
-
-Edit `config/services.txt`:
-
-```bash
-sshd                  # Enable and start
-cups:disable          # Disable
-ModemManager:mask     # Mask
 ```
 
 ### Dotfiles (GNU Stow)

@@ -66,7 +66,7 @@ run_in_session() {
 }
 
 # Available modules
-ALL_MODULES="repos multimedia packages flatpaks dotnet jetbrains claude docker fonts catppuccin icons dotfiles kde services"
+ALL_MODULES="repos multimedia packages flatpaks dotnet jetbrains claude docker fonts catppuccin icons dotfiles kde"
 
 # Source TUI library (after ALL_MODULES is defined)
 source "$SCRIPT_DIR/lib/tui.sh"
@@ -105,7 +105,6 @@ MODULES:
     fonts       Install JetBrainsMono Nerd Font and Microsoft fonts
     dotfiles    Symlink dotfiles from dotfiles/ to home directory
     kde         Apply KDE Plasma settings
-    services    Enable/start systemd services
 
 EXAMPLES:
     $(basename "$0")                      # Run full setup
@@ -269,7 +268,7 @@ main() {
     fi
 
     # Check privileges (skip for dotfiles-only runs as regular user)
-    if should_run_module "repos" || should_run_module "multimedia" || should_run_module "packages" || should_run_module "fonts" || should_run_module "services"; then
+    if should_run_module "repos" || should_run_module "multimedia" || should_run_module "packages" || should_run_module "fonts"; then
         check_privileges
     fi
 
@@ -287,7 +286,6 @@ main() {
     run_module "icons"
     run_module "dotfiles"
     run_module "kde"
-    run_module "services"
 
     echo ""
     log "Setup complete!"

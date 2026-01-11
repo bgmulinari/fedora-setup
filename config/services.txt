@@ -1,5 +1,0 @@
-# Systemd Services
-# One service per line
-# Format: service_name or service_name:action
-# Actions: enable (default), disable, mask, unmask
-# Lines starting with # are comments

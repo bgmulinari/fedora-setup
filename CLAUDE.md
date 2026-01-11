@@ -17,10 +17,10 @@ sudo ./setup.sh                       # Run full setup (with TUI)
 sudo ./setup.sh --yes                 # Skip confirmation prompt
 sudo ./setup.sh --no-tui              # Run with plain text output
 sudo ./setup.sh --only repos,packages # Run specific modules only
-sudo ./setup.sh --skip kde,services   # Skip specific modules
+sudo ./setup.sh --skip kde            # Skip specific modules
 ```
 
-**Modules** (execution order): repos, multimedia, packages, flatpaks, dotnet, jetbrains, claude, docker, fonts, catppuccin, icons, dotfiles, kde, services
+**Modules** (execution order): repos, multimedia, packages, flatpaks, dotnet, jetbrains, claude, docker, fonts, catppuccin, icons, dotfiles, kde
 
 ## Architecture
 
@@ -30,7 +30,7 @@ sudo ./setup.sh --skip kde,services   # Skip specific modules
 - `lib/kde.sh` - KDE helper library with kwriteconfig detection and wrapper functions (`kde_write`, `kde_apply_theme`, `kde_available`)
 - `scripts/*.sh` - Module scripts sourced by setup.sh; each handles one concern
 - `packages/` - Plain text lists (one item per line, `#` for comments): `dnf-packages.txt`, `flatpaks.txt`, `copr-repos.txt`
-- `config/` - Configuration files: `dnf.conf`, `services.txt`
+- `config/` - Configuration files: `dnf.conf`
 - `dotfiles/` - GNU Stow packages; each subdirectory mirrors home directory structure
 
 ## Key Patterns
@@ -40,7 +40,6 @@ sudo ./setup.sh --skip kde,services   # Skip specific modules
 - Logging: Use `log()`, `warn()`, `error()`, `info()` functions; all output goes to `setup.log`
 - Package groups: Prefix with `@` in dnf-packages.txt (e.g., `@development-tools`)
 - Package removal: Prefix with `-` in dnf-packages.txt (e.g., `-libreoffice*`)
-- Services format: `service_name` to enable, `service_name:disable` to disable, `service_name:mask` to mask
 
 ## Adding New Modules
 
