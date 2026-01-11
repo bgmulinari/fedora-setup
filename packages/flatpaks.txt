@@ -4,3 +4,4 @@
 # Find app IDs at https://flathub.org
 
 org.onlyoffice.desktopeditors
+com.usebruno.Bruno
