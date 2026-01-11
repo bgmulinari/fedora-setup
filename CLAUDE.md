@@ -38,6 +38,7 @@ sudo ./setup.sh --skip kde,services   # Skip specific modules
 - Idempotent: Check if packages/repos already exist before installing
 - Logging: Use `log()`, `warn()`, `error()`, `info()` functions; all output goes to `setup.log`
 - Package groups: Prefix with `@` in dnf-packages.txt (e.g., `@development-tools`)
+- Package removal: Prefix with `-` in dnf-packages.txt (e.g., `-libreoffice*`)
 - Services format: `service_name` to enable, `service_name:disable` to disable, `service_name:mask` to mask
 
 ## Adding New Modules

@@ -17,6 +17,7 @@ install_packages() {
 
     local packages=()
     local groups=()
+    local remove=()
 
     # Read packages from file
     while IFS= read -r line || [[ -n "$line" ]]; do
@@ -30,13 +31,27 @@ install_packages() {
         # Skip if empty after stripping comment
         [[ -z "$line" ]] && continue
 
+        # Check if it's a removal (starts with -)
+        if [[ "$line" == -* ]]; then
+            remove+=("${line:1}")
         # Check if it's a group (starts with @)
-        if [[ "$line" == @* ]]; then
+        elif [[ "$line" == @* ]]; then
             groups+=("$line")
         else
             packages+=("$line")
         fi
     done < "$PACKAGES_FILE"
+
+    # Remove packages first
+    if [[ ${#remove[@]} -gt 0 ]]; then
+        log "Removing ${#remove[@]} package(s)..."
+        tui_set_substep "Removing packages..."
+        if dnf remove -y "${remove[@]}" >> "$LOG_FILE" 2>&1; then
+            tui_set_substep "Packages removed successfully"
+        else
+            warn "Some packages could not be removed"
+        fi
+    fi
 
     # Install groups
     if [[ ${#groups[@]} -gt 0 ]]; then

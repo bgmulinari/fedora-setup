@@ -107,6 +107,9 @@ fastfetch
 
 # Package groups use @ prefix
 @development-tools
+
+# Remove packages with - prefix
+-libreoffice*
 ```
 
 ### Flatpak Apps

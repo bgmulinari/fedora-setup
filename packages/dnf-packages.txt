@@ -2,6 +2,10 @@
 # Add one package per line
 # Lines starting with # are comments
 # Use @ prefix for package groups (e.g., @development-tools)
+# Use - prefix to remove packages (e.g., -package-name)
+
+# Remove LibreOffice (using OnlyOffice flatpak instead)
+-libreoffice*
 
 code
 gh

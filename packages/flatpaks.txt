@@ -2,3 +2,5 @@
 # Add one app ID per line
 # Lines starting with # are comments
 # Find app IDs at https://flathub.org
+
+org.onlyoffice.desktopeditors
