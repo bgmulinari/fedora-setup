@@ -1,3 +1,9 @@
 {
-    "workbench.colorTheme": "Catppuccin Mocha"
+    "workbench.colorTheme": "Catppuccin Mocha",
+    "catppuccin.accentColor": "blue",
+    "catppuccin.customUIColors": {
+        "mocha": {
+            "statusBar.foreground": "accent",
+        },
+    },
 }
