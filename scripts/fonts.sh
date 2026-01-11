@@ -72,4 +72,15 @@ log "Rebuilding font cache..."
 run_as_user fc-cache -fv "$FONTS_DIR"
 fc-cache -fv >> "$LOG_FILE" 2>&1
 
+# Apply fixed font in KDE if available
+apply_kde_font_settings() {
+    kde_available || return 0
+    [[ -d "$FONT_SUBDIR" ]] || return 0
+
+    log "Setting JetBrainsMono as fixed-width font in KDE..."
+    kde_write --file kdeglobals --group General --key fixed "JetBrainsMono Nerd Font,10,-1,5,50,0,0,0,0,0"
+}
+
+apply_kde_font_settings
+
 log "Font installation complete!"

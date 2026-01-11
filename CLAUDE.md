@@ -27,9 +27,10 @@ sudo ./setup.sh --skip kde,services   # Skip specific modules
 - `auto-install.sh` - Bootstrap script for remote execution; clones repo and runs setup.sh
 - `setup.sh` - Main orchestrator; exports shared functions (`log`, `warn`, `error`, `info`, `run_as_user`, `run_in_session`) and variables (`SCRIPT_DIR`, `LOG_FILE`, `ACTUAL_USER`, `ACTUAL_HOME`) to child scripts
 - `lib/tui.sh` - TUI library providing split-view terminal interface with progress tracking
+- `lib/kde.sh` - KDE helper library with kwriteconfig detection and wrapper functions (`kde_write`, `kde_apply_theme`, `kde_available`)
 - `scripts/*.sh` - Module scripts sourced by setup.sh; each handles one concern
 - `packages/` - Plain text lists (one item per line, `#` for comments): `dnf-packages.txt`, `flatpaks.txt`, `copr-repos.txt`
-- `config/` - Configuration files: `dnf.conf`, `services.txt`, `kde-settings.sh`
+- `config/` - Configuration files: `dnf.conf`, `services.txt`
 - `dotfiles/` - GNU Stow packages; each subdirectory mirrors home directory structure
 
 ## Key Patterns

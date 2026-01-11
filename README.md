@@ -34,7 +34,8 @@ fedora-setup/
 ├── auto-install.sh          # Remote bootstrap (curl | sh)
 ├── setup.sh                 # Main entry point
 ├── lib/
-│   └── tui.sh               # TUI library (progress display)
+│   ├── tui.sh               # TUI library (progress display)
+│   └── kde.sh               # KDE helper library (kwriteconfig wrappers)
 ├── packages/
 │   ├── dnf-packages.txt     # DNF packages to install
 │   ├── flatpaks.txt         # Flatpak apps to install
@@ -48,8 +49,7 @@ fedora-setup/
 │   └── vscode/              # VS Code settings
 ├── config/
 │   ├── dnf.conf             # DNF performance settings
-│   ├── services.txt         # Systemd services to manage
-│   └── kde-settings.sh      # KDE Plasma customizations
+│   └── services.txt         # Systemd services to manage
 └── scripts/                 # Module scripts
     ├── repos.sh             # Repository setup (RPM Fusion, Flathub, COPR)
     ├── multimedia.sh        # Video codecs and hardware acceleration
@@ -90,10 +90,10 @@ sudo ./setup.sh --skip kde,services   # Skip specific modules
 | `claude` | Install Claude Code CLI |
 | `docker` | Install Docker Engine, add user to docker group |
 | `fonts` | Install JetBrainsMono Nerd Font and Microsoft core fonts |
-| `catppuccin` | Install Catppuccin Mocha theme (KDE, GTK, VS Code, btop) |
-| `icons` | Install Papirus icon theme with breeze folders |
+| `catppuccin` | Install and apply Catppuccin Mocha theme (KDE, GTK, VS Code, btop) |
+| `icons` | Install and apply Papirus icon theme with breeze folders |
 | `dotfiles` | Symlink dotfiles using GNU Stow |
-| `kde` | Apply KDE Plasma settings (Catppuccin theme) |
+| `kde` | Apply KDE keybindings and terminal settings |
 | `services` | Enable/disable systemd services |
 
 ## Configuration
@@ -143,24 +143,6 @@ Edit `config/services.txt`:
 sshd                  # Enable and start
 cups:disable          # Disable
 ModemManager:mask     # Mask
-```
-
-### KDE Plasma Settings
-
-Edit `config/kde-settings.sh`:
-
-```bash
-# Global theme (Catppuccin Mocha Blue)
-run_lookandfeel "Catppuccin-Mocha-Blue"
-
-# GTK theme for GTK apps
-run_kwrite --file gtk-3.0/settings.ini --group Settings --key gtk-theme-name "catppuccin-mocha-blue-standard+default"
-
-# Fixed-width font
-run_kwrite --file kdeglobals --group General --key fixed "JetBrainsMono Nerd Font,10"
-
-# Default terminal
-run_kwrite --file kdeglobals --group General --key TerminalApplication "ghostty"
 ```
 
 ### Dotfiles (GNU Stow)

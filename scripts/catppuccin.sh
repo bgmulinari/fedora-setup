@@ -108,6 +108,27 @@ install_kde_theme
 install_gtk_theme
 install_vscode_theme
 install_btop_theme
+
+# Apply Catppuccin theme in KDE if available
+apply_catppuccin_theme() {
+    kde_available || return 0
+
+    local theme_dir="$CATPPUCCIN_DIR/plasma/look-and-feel/Catppuccin-Mocha-Blue"
+    if [[ -d "$theme_dir" ]]; then
+        log "Applying Catppuccin Mocha Blue look-and-feel..."
+        kde_apply_theme "Catppuccin-Mocha-Blue"
+    fi
+
+    # Apply GTK theme settings if GTK theme is installed
+    local gtk_theme_dir="$CATPPUCCIN_DIR/themes/catppuccin-mocha-blue-standard+default"
+    if [[ -d "$gtk_theme_dir" ]]; then
+        log "Setting GTK theme..."
+        kde_write --file gtk-3.0/settings.ini --group Settings --key gtk-theme-name "catppuccin-mocha-blue-standard+default"
+        kde_write --file gtk-4.0/settings.ini --group Settings --key gtk-theme-name "catppuccin-mocha-blue-standard+default"
+    fi
+}
+
+apply_catppuccin_theme
 log_jetbrains_info
 
 log "Catppuccin themes installed!"

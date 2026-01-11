@@ -1,84 +1,85 @@
 #!/bin/bash
 #
 # KDE Plasma Configuration Module
-# Applies KDE settings via plasma-apply-* and kwriteconfig tools
+# Applies keybindings and general settings
+# Resource-specific settings (icons, themes, fonts) are applied by their modules
+#
 
 set -euo pipefail
 
-# Logging functions (standalone since this runs as subprocess)
-# Log file may not be writable (owned by root), so we check first
-_log_to_file() {
-    [[ -w "$LOG_FILE" ]] && echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" >> "$LOG_FILE"
-}
-
-log() {
-    echo -e "\033[0;32m==>\033[0m $1"
-    _log_to_file "$1"
-}
-
-warn() {
-    echo -e "\033[1;33m==> WARNING:\033[0m $1"
-    _log_to_file "WARNING: $1"
-}
-
-info() {
-    echo -e "\033[0;34m    $1\033[0m"
-}
-
 log "Configuring KDE Plasma..."
 
-# Detect kwriteconfig version (KDE 5 vs 6)
-if command -v kwriteconfig6 &> /dev/null; then
-    KWRITE="kwriteconfig6"
-elif command -v kwriteconfig5 &> /dev/null; then
-    KWRITE="kwriteconfig5"
-else
-    warn "kwriteconfig not found. Is KDE Plasma installed?"
+if ! kde_available; then
+    warn "KDE tools not found. Is KDE Plasma installed?"
     exit 0
 fi
 
-# Run kwriteconfig in user's session context
-run_kwrite() {
-    info "Applying settings via user session..."
-    run_in_session "$KWRITE" "$@"
-}
+# Apply resource-specific settings ONLY if resource exists
+# This handles the case where kde runs but catppuccin/icons/fonts modules didn't
+apply_conditional_resource_settings() {
+    # Catppuccin look-and-feel
+    local catppuccin_dir="$ACTUAL_HOME/.local/share/plasma/look-and-feel/Catppuccin-Mocha-Blue"
+    if [[ -d "$catppuccin_dir" ]]; then
+        log "Applying Catppuccin Mocha Blue look-and-feel..."
+        kde_apply_theme "Catppuccin-Mocha-Blue"
 
-# Detect look-and-feel tool (KDE 6 vs 5)
-if command -v plasma-apply-lookandfeel &> /dev/null; then
-    LOOKANDFEEL="plasma-apply-lookandfeel"
-elif command -v lookandfeeltool &> /dev/null; then
-    LOOKANDFEEL="lookandfeeltool"
-else
-    LOOKANDFEEL=""
-fi
-
-# Apply look-and-feel theme
-run_lookandfeel() {
-    local theme="$1"
-
-    if [[ -z "$LOOKANDFEEL" ]]; then
-        warn "No look-and-feel tool found. Cannot set global theme."
-        return 1
-    fi
-
-    info "Applying theme via user session..."
-    run_in_session "$LOOKANDFEEL" -a "$theme"
-}
-
-# Apply settings from config/kde-settings.sh if it exists
-apply_custom_kde_settings() {
-    local kde_script="$SCRIPT_DIR/config/kde-settings.sh"
-
-    if [[ -f "$kde_script" ]]; then
-        log "Applying custom KDE settings from $kde_script"
-        # shellcheck source=/dev/null
-        source "$kde_script"
+        # GTK theme
+        local gtk_theme_dir="$ACTUAL_HOME/.local/share/themes/catppuccin-mocha-blue-standard+default"
+        if [[ -d "$gtk_theme_dir" ]]; then
+            log "Setting GTK theme..."
+            kde_write --file gtk-3.0/settings.ini --group Settings --key gtk-theme-name "catppuccin-mocha-blue-standard+default"
+            kde_write --file gtk-4.0/settings.ini --group Settings --key gtk-theme-name "catppuccin-mocha-blue-standard+default"
+        fi
     else
-        info "No custom KDE settings file found at $kde_script"
+        info "Catppuccin theme not installed, skipping theme application"
     fi
+
+    # Papirus icons
+    if [[ -d "$ACTUAL_HOME/.local/share/icons/Papirus-Dark" ]]; then
+        log "Applying Papirus-Dark icon theme..."
+        kde_write --file kdeglobals --group Icons --key Theme "Papirus-Dark"
+    else
+        info "Papirus icons not installed, skipping icon theme"
+    fi
+
+    # JetBrainsMono fixed font
+    local font_dir="$ACTUAL_HOME/.local/share/fonts/JetBrainsMonoNerdFont"
+    if [[ -d "$font_dir" ]]; then
+        log "Setting JetBrainsMono as fixed-width font..."
+        kde_write --file kdeglobals --group General --key fixed "JetBrainsMono Nerd Font,10,-1,5,50,0,0,0,0,0"
+    else
+        info "JetBrainsMono font not installed, skipping font setting"
+    fi
+}
+
+# Apply terminal and keybind settings
+apply_keybind_settings() {
+    log "Applying terminal and keybind settings..."
+
+    # Default terminal emulator
+    kde_write --file kdeglobals --group General --key TerminalApplication "ghostty"
+    kde_write --file kdeglobals --group General --key TerminalService "com.mitchellh.ghostty.desktop"
+
+    # Unbind Meta+[1-9] from task manager
+    local i
+    for i in {1..9}; do
+        kde_write --file kglobalshortcutsrc --group plasmashell \
+            --key "activate task manager entry $i" "none,Meta+$i,Activate Task Manager Entry $i"
+    done
+
+    # Bind Meta+[1-5] to virtual desktops
+    for i in {1..5}; do
+        kde_write --file kglobalshortcutsrc --group kwin \
+            --key "Switch to Desktop $i" "Meta+$i,Ctrl+F$i,Switch to Desktop $i"
+    done
+
+    # Terminal shortcut: Meta+Return
+    kde_write --file kglobalshortcutsrc --group services \
+        --group com.mitchellh.ghostty.desktop --key "_launch" "Meta+Return"
 }
 
 # Execute
-apply_custom_kde_settings
+apply_conditional_resource_settings
+apply_keybind_settings
 
 log "KDE Plasma configuration complete!"

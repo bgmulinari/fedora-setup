@@ -71,6 +71,9 @@ ALL_MODULES="repos multimedia packages flatpaks dotnet jetbrains claude docker f
 # Source TUI library (after ALL_MODULES is defined)
 source "$SCRIPT_DIR/lib/tui.sh"
 
+# Source KDE helper library
+source "$SCRIPT_DIR/lib/kde.sh"
+
 # Default settings
 SKIP_MODULES=""
 ONLY_MODULES=""

@@ -40,4 +40,15 @@ install_papirus_icons() {
 
 install_papirus_icons
 
+# Apply icon theme in KDE if available
+apply_icon_theme() {
+    kde_available || return 0
+    [[ -d "$ICONS_DIR/Papirus-Dark" ]] || return 0
+
+    log "Applying Papirus-Dark icon theme..."
+    kde_write --file kdeglobals --group Icons --key Theme "Papirus-Dark"
+}
+
+apply_icon_theme
+
 log "Icon themes installed!"
