@@ -44,6 +44,7 @@ fedora-setup/
 │   ├── btop/                # btop system monitor config
 │   ├── claude/              # Claude Code settings
 │   ├── ghostty/             # Ghostty terminal config
+│   ├── nvim/                # Neovim config (LazyVim)
 │   └── vscode/              # VS Code settings
 ├── config/
 │   ├── dnf.conf             # DNF performance settings
@@ -167,6 +168,7 @@ Each subdirectory in `dotfiles/` mirrors your home directory:
 ```
 dotfiles/bash/.bashrc.d/dotnet           →  ~/.bashrc.d/dotnet
 dotfiles/ghostty/.config/ghostty/config  →  ~/.config/ghostty/config
+dotfiles/nvim/.config/nvim/init.lua      →  ~/.config/nvim/init.lua
 dotfiles/vscode/.config/Code/User/...    →  ~/.config/Code/User/...
 ```
 
