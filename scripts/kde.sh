@@ -86,9 +86,17 @@ apply_keybind_settings() {
     done
 }
 
+# Apply desktop settings
+apply_desktop_settings() {
+    log "Enabling desktop settings..."
+    kde_write --file kwinrc --group Plugins --key blurEnabled true
+    kde_write --file kdeglobals --group KDE --key AnimationDurationFactor 0.25
+}
+
 # Execute
 apply_conditional_resource_settings
 apply_terminal_settings
 apply_keybind_settings
+apply_desktop_settings
 
 log "KDE Plasma configuration complete!"
