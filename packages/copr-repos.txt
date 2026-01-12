@@ -3,3 +3,4 @@
 # Lines starting with # are comments
 
 scottames/ghostty
+achno/gowall

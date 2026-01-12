@@ -13,3 +13,4 @@ fastfetch
 ghostty
 btop
 neovim
+gowall
