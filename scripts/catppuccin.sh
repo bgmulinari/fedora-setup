@@ -9,6 +9,7 @@ set -euo pipefail
 log "Installing Catppuccin themes..."
 
 CATPPUCCIN_DIR="$ACTUAL_HOME/.local/share"
+DEFAULT_WALLPAPER="SilentPeaks.jpg"  # Wallpaper to apply (from assets/wallpapers/)
 
 # Install Catppuccin KDE theme (Plasma, color schemes, window decorations - NO cursor)
 install_kde_theme() {
@@ -99,6 +100,37 @@ install_btop_theme() {
     info "btop Catppuccin theme installed"
 }
 
+# Install wallpapers (copies all from assets/wallpapers/)
+install_wallpapers() {
+    local src_dir="$SCRIPT_DIR/assets/wallpapers"
+    local dest_dir="$ACTUAL_HOME/.local/share/wallpapers"
+
+    if [[ ! -d "$src_dir" ]]; then
+        info "No wallpapers directory found, skipping"
+        return 0
+    fi
+
+    log "Installing wallpapers..."
+    run_as_user mkdir -p "$dest_dir"
+
+    local count=0
+    for wallpaper in "$src_dir"/*; do
+        [[ -f "$wallpaper" ]] || continue
+        local filename
+        filename=$(basename "$wallpaper")
+        if [[ ! -f "$dest_dir/$filename" ]]; then
+            run_as_user cp "$wallpaper" "$dest_dir/$filename"
+            ((count++))
+        fi
+    done
+
+    if [[ $count -gt 0 ]]; then
+        info "$count wallpaper(s) installed"
+    else
+        info "Wallpapers already installed"
+    fi
+}
+
 # Log JetBrains manual install instructions
 log_jetbrains_info() {
     info "JetBrains IDEs: Install Catppuccin plugin via Settings > Plugins > Marketplace"
@@ -108,6 +140,7 @@ install_kde_theme
 install_gtk_theme
 install_vscode_theme
 install_btop_theme
+install_wallpapers
 
 # Apply Catppuccin theme in KDE if available
 apply_catppuccin_theme() {
@@ -125,6 +158,13 @@ apply_catppuccin_theme() {
         log "Setting GTK theme..."
         kde_write --file gtk-3.0/settings.ini --group Settings --key gtk-theme-name "catppuccin-mocha-blue-standard+default"
         kde_write --file gtk-4.0/settings.ini --group Settings --key gtk-theme-name "catppuccin-mocha-blue-standard+default"
+    fi
+
+    # Apply wallpaper
+    local wallpaper="$ACTUAL_HOME/.local/share/wallpapers/$DEFAULT_WALLPAPER"
+    if [[ -f "$wallpaper" ]] && command -v plasma-apply-wallpaperimage &>/dev/null; then
+        log "Applying wallpaper..."
+        run_in_session plasma-apply-wallpaperimage "$wallpaper"
     fi
 }
 
