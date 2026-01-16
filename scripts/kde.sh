@@ -46,6 +46,19 @@ apply_conditional_resource_settings() {
         info "Papirus icons not installed, skipping icon theme"
     fi
 
+    # Inter font (all fonts except fixed)
+    local inter_font_dir="$ACTUAL_HOME/.local/share/fonts/Inter"
+    if [[ -d "$inter_font_dir" ]]; then
+        log "Setting Inter as default font..."
+        kde_write --file kdeglobals --group General --key font "Inter Variable,10,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+        kde_write --file kdeglobals --group General --key smallestReadableFont "Inter Variable,8,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+        kde_write --file kdeglobals --group General --key toolBarFont "Inter Variable,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+        kde_write --file kdeglobals --group General --key menuFont "Inter Variable,10,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+        kde_write --file kdeglobals --group WM --key activeFont "Inter Variable,10,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+    else
+        info "Inter font not installed, skipping default font setting"
+    fi
+
     # JetBrainsMono fixed font
     local font_dir="$ACTUAL_HOME/.local/share/fonts/JetBrainsMonoNerdFont"
     if [[ -d "$font_dir" ]]; then
