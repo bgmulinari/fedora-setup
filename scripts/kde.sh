@@ -23,6 +23,10 @@ apply_conditional_resource_settings() {
         log "Applying Catppuccin Mocha Blue look-and-feel..."
         kde_apply_theme "Catppuccin-Mocha-Blue"
 
+        # Window decoration: no borders
+        kde_write --file kwinrc --group org.kde.kdecoration2 --key BorderSize None
+        kde_write --file kwinrc --group org.kde.kdecoration2 --key BorderSizeAuto false
+
         # GTK theme
         local gtk_theme_dir="$ACTUAL_HOME/.local/share/themes/catppuccin-mocha-blue-standard+default"
         if [[ -d "$gtk_theme_dir" ]]; then
@@ -90,7 +94,19 @@ apply_keybind_settings() {
 apply_desktop_settings() {
     log "Enabling desktop settings..."
     kde_write --file kwinrc --group Plugins --key blurEnabled true
+    kde_write --file kwinrc --group Effect-blur --key BlurStrength 5
+    kde_write --file kwinrc --group Effect-blur --key NoiseStrength 0
     kde_write --file kdeglobals --group KDE --key AnimationDurationFactor 0.25
+
+    # Set translucent opacity on all panels
+    local config_file="$ACTUAL_HOME/.config/plasmashellrc"
+    if [[ -f "$config_file" ]]; then
+        local panel_ids
+        panel_ids=$(grep -oP '(?<=\[PlasmaViews\]\[Panel )\d+(?=\])' "$config_file" 2>/dev/null | sort -u)
+        for panel_id in $panel_ids; do
+            kde_write --file plasmashellrc --group PlasmaViews --group "Panel $panel_id" --key panelOpacity 2
+        done
+    fi
 }
 
 # Execute
