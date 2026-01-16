@@ -3,16 +3,22 @@ theme = Catppuccin Mocha
 
 # Font
 font-family = "JetBrainsMono Nerd Font"
-font-thicken = true
 font-size = 10
 
-# Window size
+# Window
 window-height = 30
-window-width = 110 
+window-width = 110
+window-padding-x = 8
+window-padding-y = 8
+window-decoration = server
 
 # Background
-background-opacity = 0.75
+background-opacity = 0.80
 background-blur-radius = 20
+
+# Shader
+custom-shader = shaders/cursor_tail.glsl
+custom-shader-animation = always
 
 # Misc
 copy-on-select = clipboard
