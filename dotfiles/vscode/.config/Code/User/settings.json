@@ -6,4 +6,5 @@
             "statusBar.foreground": "accent",
         },
     },
+    "editor.fontFamily": "'JetBrainsMono Nerd Font', 'Droid Sans Mono', monospace",
 }
