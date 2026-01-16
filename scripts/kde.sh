@@ -113,6 +113,7 @@ apply_desktop_settings() {
     kde_write --file kwinrc --group Effect-blur --key BlurStrength 5
     kde_write --file kwinrc --group Effect-blur --key NoiseStrength 0
     kde_write --file kdeglobals --group KDE --key AnimationDurationFactor 0.25
+    kde_write --file breezerc --group Style --key MenuOpacity 80
 
     # Set translucent opacity on all panels
     local config_file="$ACTUAL_HOME/.config/plasmashellrc"
