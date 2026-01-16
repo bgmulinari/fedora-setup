@@ -27,6 +27,9 @@ apply_conditional_resource_settings() {
         kde_write --file kwinrc --group org.kde.kdecoration2 --key BorderSize None
         kde_write --file kwinrc --group org.kde.kdecoration2 --key BorderSizeAuto false
 
+        # Window decoration: button layout
+        kde_write --file kwinrc --group org.kde.kdecoration2 --key ButtonsOnLeft FS
+
         # GTK theme
         local gtk_theme_dir="$ACTUAL_HOME/.local/share/themes/catppuccin-mocha-blue-standard+default"
         if [[ -d "$gtk_theme_dir" ]]; then

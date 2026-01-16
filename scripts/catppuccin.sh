@@ -150,6 +150,9 @@ apply_catppuccin_theme() {
     if [[ -d "$theme_dir" ]]; then
         log "Applying Catppuccin Mocha Blue look-and-feel..."
         kde_apply_theme "Catppuccin-Mocha-Blue"
+
+        # Window decoration: tiny buttons
+        kde_write --file auroraerc --group CatppuccinMocha-Classic --key ButtonSize 0
     fi
 
     # Apply GTK theme settings if GTK theme is installed
