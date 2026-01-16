@@ -4,6 +4,10 @@
     "commit": "",
     "pr": ""
   },
+  "statusLine": {
+    "type": "command",
+    "command": "/bin/bash ~/.claude/statusline-session.sh"
+  },
   "enabledPlugins": {
     "csharp-lsp@claude-plugins-official": true
   },
