@@ -5,3 +5,4 @@ setup.log
 *~
 *.swp
 .DS_Store
+.claude/
