@@ -105,8 +105,8 @@ MODULES:
     claude      Install Claude Code CLI
     docker      Install Docker Engine from official repository
     fonts       Install JetBrainsMono Nerd Font and Microsoft fonts
-    dotfiles    Symlink dotfiles from dotfiles/ to home directory
     zsh         Install Oh My Zsh with plugins and Catppuccin theme
+    dotfiles    Symlink dotfiles from dotfiles/ to home directory
     kde         Apply KDE Plasma settings
 
 EXAMPLES:
