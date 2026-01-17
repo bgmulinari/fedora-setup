@@ -14,3 +14,5 @@ ghostty
 btop
 neovim
 gowall
+fd-find
+fzf
