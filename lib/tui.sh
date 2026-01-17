@@ -11,7 +11,7 @@
 TUI_ENABLED=0
 TUI_TERM_LINES=0
 TUI_TERM_COLS=0
-TUI_HEADER_HEIGHT=12
+TUI_HEADER_HEIGHT=13
 TUI_CURRENT_MODULE=""
 TUI_CURRENT_MODULE_IDX=0
 TUI_SUBSTEP_TEXT=""
@@ -200,16 +200,16 @@ _tui_draw_header() {
     printf "${BLUE}│${NC}%*s${BLUE}│${NC}" $((width-2)) ""
     _tui_clear_eol
 
-    # Lines 8-9: Module grid
+    # Lines 8-10: Module grid
     _tui_draw_module_grid
 
-    # Line 10: Empty
-    _tui_goto 10 0
+    # Line 11: Empty
+    _tui_goto 11 0
     printf "${BLUE}│${NC}%*s${BLUE}│${NC}" $((width-2)) ""
     _tui_clear_eol
 
-    # Line 11: Bottom border (end of header)
-    _tui_goto 11 0
+    # Line 12: Bottom border (end of header)
+    _tui_goto 12 0
     printf "${BLUE}└%s┘${NC}" "$(_tui_repeat '─' $((width-2)))"
     _tui_clear_eol
 
@@ -258,15 +258,30 @@ _tui_draw_module_grid() {
     printf "%*s${BLUE}│${NC}" $remaining ""
     _tui_clear_eol
 
-    # Row 2: Next 6 modules (line 9)
+    # Row 2: Next 5 modules (line 9)
     _tui_goto 9 0
     printf "${BLUE}│${NC}  "
-    for ((i=5; i<11 && i<${#modules[@]}; i++)); do
+    for ((i=5; i<10 && i<${#modules[@]}; i++)); do
         local m="${modules[$i]}"
         local status="${TUI_MODULE_STATUS[$m]:-pending}"
         _tui_print_module_status "$m" "$status"
     done
-    remaining=$((width - 2 - 6*col_width - 2))
+    remaining=$((width - 2 - 5*col_width - 2))
+    [[ $remaining -lt 0 ]] && remaining=0
+    printf "%*s${BLUE}│${NC}" $remaining ""
+    _tui_clear_eol
+
+    # Row 3: Remaining modules (line 10)
+    _tui_goto 10 0
+    printf "${BLUE}│${NC}  "
+    local row3_count=0
+    for ((i=10; i<${#modules[@]}; i++)); do
+        local m="${modules[$i]}"
+        local status="${TUI_MODULE_STATUS[$m]:-pending}"
+        _tui_print_module_status "$m" "$status"
+        ((row3_count++)) || true
+    done
+    remaining=$((width - 2 - row3_count*col_width - 2))
     [[ $remaining -lt 0 ]] && remaining=0
     printf "%*s${BLUE}│${NC}" $remaining ""
     _tui_clear_eol

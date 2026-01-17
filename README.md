@@ -46,7 +46,10 @@ fedora-setup/
 │   ├── claude/              # Claude Code settings
 │   ├── ghostty/             # Ghostty terminal config
 │   ├── nvim/                # Neovim config (LazyVim)
-│   └── vscode/              # VS Code settings
+│   ├── shell/               # Shared shell configs (.shellrc.d/)
+│   ├── starship/            # Starship prompt config
+│   ├── vscode/              # VS Code settings
+│   └── zsh/                 # Zsh configs (.zshrc, .zshrc.d/)
 ├── config/
 │   └── dnf.conf             # DNF performance settings
 └── scripts/                 # Module scripts
@@ -62,6 +65,7 @@ fedora-setup/
     ├── catppuccin.sh        # Catppuccin theme installation
     ├── icons.sh             # Icon theme installation (Papirus)
     ├── dotfiles.sh          # GNU Stow dotfiles
+    ├── zsh.sh               # Zsh with Oh My Zsh and plugins
     └── kde.sh               # KDE configuration
 ```
 
@@ -91,6 +95,7 @@ sudo ./setup.sh --skip kde            # Skip specific modules
 | `catppuccin` | Install and apply Catppuccin Mocha theme (KDE, GTK, VS Code, btop) |
 | `icons` | Install and apply Papirus icon theme with breeze folders |
 | `dotfiles` | Symlink dotfiles using GNU Stow |
+| `zsh` | Install Oh My Zsh with plugins (autosuggestions, syntax-highlighting) and Catppuccin theme |
 | `kde` | Apply KDE keybindings and terminal settings |
 
 ## Configuration
@@ -137,10 +142,11 @@ atim/lazygit
 Each subdirectory in `dotfiles/` mirrors your home directory:
 
 ```
-dotfiles/bash/.bashrc.d/dotnet           →  ~/.bashrc.d/dotnet
+dotfiles/shell/.shellrc.d/dotnet         →  ~/.shellrc.d/dotnet    (shared by bash/zsh)
+dotfiles/zsh/.zshrc                      →  ~/.zshrc
+dotfiles/starship/.config/starship.toml  →  ~/.config/starship.toml
 dotfiles/ghostty/.config/ghostty/config  →  ~/.config/ghostty/config
 dotfiles/nvim/.config/nvim/init.lua      →  ~/.config/nvim/init.lua
-dotfiles/vscode/.config/Code/User/...    →  ~/.config/Code/User/...
 ```
 
 ## Troubleshooting

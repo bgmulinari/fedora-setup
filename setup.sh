@@ -66,7 +66,7 @@ run_in_session() {
 }
 
 # Available modules
-ALL_MODULES="repos multimedia packages flatpaks dotnet jetbrains claude docker fonts catppuccin icons dotfiles kde"
+ALL_MODULES="repos multimedia packages flatpaks dotnet jetbrains claude docker fonts catppuccin icons dotfiles zsh kde"
 
 # Source TUI library (after ALL_MODULES is defined)
 source "$SCRIPT_DIR/lib/tui.sh"
@@ -104,6 +104,7 @@ MODULES:
     docker      Install Docker Engine from official repository
     fonts       Install JetBrainsMono Nerd Font and Microsoft fonts
     dotfiles    Symlink dotfiles from dotfiles/ to home directory
+    zsh         Install Oh My Zsh with plugins and Catppuccin theme
     kde         Apply KDE Plasma settings
 
 EXAMPLES:
@@ -285,6 +286,7 @@ main() {
     run_module "catppuccin"
     run_module "icons"
     run_module "dotfiles"
+    run_module "zsh"
     run_module "kde"
 
     echo ""

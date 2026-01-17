@@ -1,0 +1,16 @@
+# Starship prompt and Zoxide initialization
+
+# Detect current shell (not login shell)
+if [[ -n "$ZSH_VERSION" ]]; then
+    _current_shell="zsh"
+elif [[ -n "$BASH_VERSION" ]]; then
+    _current_shell="bash"
+fi
+
+# Initialize Starship prompt
+command -v starship &>/dev/null && eval "$(starship init $_current_shell)"
+
+# Initialize Zoxide (smarter cd)
+command -v zoxide &>/dev/null && eval "$(zoxide init $_current_shell)"
+
+unset _current_shell

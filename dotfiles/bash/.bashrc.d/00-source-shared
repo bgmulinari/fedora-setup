@@ -1,0 +1,4 @@
+# Source shared shell configs
+for config in ~/.shellrc.d/*; do
+    [[ -f "$config" ]] && source "$config"
+done
