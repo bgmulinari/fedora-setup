@@ -13,7 +13,7 @@ window-padding-y = 8
 window-decoration = server
 
 # Background
-background-opacity = 0.85
+background-opacity = 0.90
 background-blur-radius = 20
 
 # Shader
