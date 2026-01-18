@@ -126,10 +126,46 @@ apply_desktop_settings() {
     fi
 }
 
+# Apply clock settings (24-hour format, ISO date)
+apply_clock_settings() {
+    log "Configuring clock settings..."
+
+    local config_file="$ACTUAL_HOME/.config/plasma-org.kde.plasma.desktop-appletsrc"
+    if [[ ! -f "$config_file" ]]; then
+        info "Plasma applet config not found, skipping clock settings"
+        return 0
+    fi
+
+    # Find the digital clock applet section
+    local clock_section
+    clock_section=$(grep -B2 "plugin=org.kde.plasma.digitalclock" "$config_file" | \
+        grep -oP '\[Containments\]\[\d+\]\[Applets\]\[\d+\]' | head -1)
+
+    if [[ -z "$clock_section" ]]; then
+        info "Digital clock applet not found, skipping clock settings"
+        return 0
+    fi
+
+    # Convert [Containments][X][Applets][Y] to nested --group format
+    # Result: "Containments" --group "X" --group "Applets" --group "Y"
+    local group_args
+    group_args=$(echo "$clock_section" | sed 's/\[/--group "/g; s/\]/\" /g')
+
+    # Apply 24-hour format and ISO date
+    eval kde_write --file plasma-org.kde.plasma.desktop-appletsrc \
+        $group_args --group Configuration --group Appearance \
+        --key use24hFormat 2
+
+    eval kde_write --file plasma-org.kde.plasma.desktop-appletsrc \
+        $group_args --group Configuration --group Appearance \
+        --key dateFormat isoDate
+}
+
 # Execute
 apply_conditional_resource_settings
 apply_terminal_settings
 apply_keybind_settings
 apply_desktop_settings
+apply_clock_settings
 
 log "KDE Plasma configuration complete!"
