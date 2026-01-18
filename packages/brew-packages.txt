@@ -1,0 +1,6 @@
+# Homebrew Packages
+# Add one package per line
+# Lines starting with # are comments
+# Find packages at https://formulae.brew.sh
+
+lazydocker

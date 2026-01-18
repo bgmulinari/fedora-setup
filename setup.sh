@@ -68,7 +68,7 @@ run_in_session() {
 # Available modules (order matters!)
 # dotfiles must run AFTER modules that create default configs (e.g., zsh installs Oh My Zsh
 # which creates ~/.zshrc). Running dotfiles last ensures our custom configs overwrite defaults.
-ALL_MODULES="repos multimedia packages flatpaks dotnet jetbrains claude docker fonts catppuccin icons zsh dotfiles kde"
+ALL_MODULES="repos multimedia packages flatpaks homebrew dotnet jetbrains claude docker fonts catppuccin icons zsh dotfiles kde"
 
 # Source TUI library (after ALL_MODULES is defined)
 source "$SCRIPT_DIR/lib/tui.sh"
@@ -101,6 +101,7 @@ MODULES:
     multimedia  Install video codecs and hardware acceleration
     packages    Install DNF packages from packages/dnf-packages.txt
     flatpaks    Install Flatpak apps from packages/flatpaks.txt
+    homebrew    Install Homebrew and packages from brew-packages.txt
     jetbrains   Install JetBrains Toolbox App
     claude      Install Claude Code CLI
     docker      Install Docker Engine from official repository
@@ -280,6 +281,7 @@ main() {
     run_module "multimedia"
     run_module "packages"
     run_module "flatpaks"
+    run_module "homebrew"
     run_module "dotnet"
     run_module "jetbrains"
     run_module "claude"

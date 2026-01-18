@@ -39,7 +39,8 @@ fedora-setup/
 ├── packages/
 │   ├── dnf-packages.txt     # DNF packages to install
 │   ├── flatpaks.txt         # Flatpak apps to install
-│   └── copr-repos.txt       # COPR repositories to enable
+│   ├── copr-repos.txt       # COPR repositories to enable
+│   └── brew-packages.txt    # Homebrew packages to install
 ├── dotfiles/                # Stow-managed dotfiles
 │   ├── bash/                # Bash configs (.bashrc.d/)
 │   ├── btop/                # btop system monitor config
@@ -57,6 +58,7 @@ fedora-setup/
     ├── multimedia.sh        # Video codecs and hardware acceleration
     ├── packages.sh          # DNF package installation
     ├── flatpaks.sh          # Flatpak installation
+    ├── homebrew.sh          # Homebrew and brew packages
     ├── dotnet.sh            # .NET SDK installation
     ├── jetbrains.sh         # JetBrains Toolbox installation
     ├── claude.sh            # Claude Code CLI installation
@@ -87,6 +89,7 @@ sudo ./setup.sh --skip kde            # Skip specific modules
 | `multimedia` | Install video codecs (ffmpeg, GStreamer) and hardware acceleration |
 | `packages` | Install DNF packages from `packages/dnf-packages.txt` |
 | `flatpaks` | Install Flatpak apps from `packages/flatpaks.txt` |
+| `homebrew` | Install Homebrew and packages from `packages/brew-packages.txt` |
 | `dotnet` | Install .NET SDK to `~/.dotnet` |
 | `jetbrains` | Install JetBrains Toolbox App |
 | `claude` | Install Claude Code CLI |
@@ -136,6 +139,16 @@ Edit `packages/copr-repos.txt`:
 scottames/ghostty
 atim/lazygit
 ```
+
+### Homebrew Packages
+
+Edit `packages/brew-packages.txt`:
+
+```bash
+lazydocker
+```
+
+Find packages at [Homebrew Formulae](https://formulae.brew.sh).
 
 ### Dotfiles (GNU Stow)
 

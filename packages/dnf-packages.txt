@@ -20,3 +20,5 @@ fzf
 starship
 zoxide
 bat
+chromium
+lazygit

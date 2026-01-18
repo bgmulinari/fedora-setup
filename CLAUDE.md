@@ -20,7 +20,7 @@ sudo ./setup.sh --only repos,packages # Run specific modules only
 sudo ./setup.sh --skip kde            # Skip specific modules
 ```
 
-**Modules** (execution order): repos, multimedia, packages, flatpaks, dotnet, jetbrains, claude, docker, fonts, catppuccin, icons, zsh, dotfiles, kde
+**Modules** (execution order): repos, multimedia, packages, flatpaks, homebrew, dotnet, jetbrains, claude, docker, fonts, catppuccin, icons, zsh, dotfiles, kde
 
 ## Architecture
 
@@ -29,7 +29,7 @@ sudo ./setup.sh --skip kde            # Skip specific modules
 - `lib/tui.sh` - TUI library providing split-view terminal interface with progress tracking
 - `lib/kde.sh` - KDE helper library with kwriteconfig detection and wrapper functions (`kde_write`, `kde_apply_theme`, `kde_available`)
 - `scripts/*.sh` - Module scripts sourced by setup.sh; each handles one concern
-- `packages/` - Plain text lists (one item per line, `#` for comments): `dnf-packages.txt`, `flatpaks.txt`, `copr-repos.txt`
+- `packages/` - Plain text lists (one item per line, `#` for comments): `dnf-packages.txt`, `flatpaks.txt`, `copr-repos.txt`, `brew-packages.txt`
 - `config/` - Configuration files: `dnf.conf`
 - `dotfiles/` - GNU Stow packages; each subdirectory mirrors home directory structure
 
