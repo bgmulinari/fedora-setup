@@ -17,13 +17,30 @@ install_homebrew() {
 
     log "Installing Homebrew..."
 
+    # Create Homebrew prefix directory with proper ownership
+    # This is needed because the installer runs as user but /home/linuxbrew requires root to create
+    mkdir -p "$BREW_PREFIX"
+    chown -R "$ACTUAL_USER:$ACTUAL_USER" /home/linuxbrew
+
     # Download and run installer as user (non-interactive)
     run_as_user bash -c 'NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"' >> "$LOG_FILE" 2>&1
+
+    # Verify installation succeeded
+    if [[ ! -x "$BREW_PREFIX/bin/brew" ]]; then
+        warn "Homebrew installation failed"
+        return 1
+    fi
 
     log "Homebrew installed successfully"
 }
 
 install_packages() {
+    # Skip if brew is not installed
+    if [[ ! -x "$BREW_PREFIX/bin/brew" ]]; then
+        warn "Homebrew not available, skipping brew packages"
+        return
+    fi
+
     if [[ ! -f "$PACKAGES_FILE" ]]; then
         info "No brew packages file found, skipping"
         return
