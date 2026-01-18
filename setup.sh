@@ -199,6 +199,11 @@ show_plan() {
         done
     fi
     echo ""
+
+    echo -e "${YELLOW}WARNING:${NC} This setup may overwrite existing configuration files"
+    echo -e "         (e.g., .zshrc, .bashrc, KDE settings). Backup any custom"
+    echo -e "         configurations before proceeding."
+    echo ""
 }
 
 # Run a module script

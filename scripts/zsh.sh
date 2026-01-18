@@ -92,6 +92,10 @@ change_default_shell() {
 
 # Run installation steps
 install_oh_my_zsh
+
+# Remove Oh My Zsh's default .zshrc so dotfiles module can stow our custom one
+rm -f "$ACTUAL_HOME/.zshrc"
+
 install_plugins
 install_catppuccin_theme
 ensure_valid_shell
