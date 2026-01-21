@@ -1,14 +1,15 @@
 {
-  "model": "opus",
   "attribution": {
     "commit": "",
     "pr": ""
   },
+  "model": "opus",
   "statusLine": {
     "type": "command",
     "command": "/bin/bash ~/.claude/statusline-session.sh"
   },
   "enabledPlugins": {
+    "context7@claude-plugins-official": true,
     "csharp-lsp@claude-plugins-official": true
   },
   "alwaysThinkingEnabled": true
