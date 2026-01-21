@@ -6,3 +6,4 @@ scottames/ghostty
 achno/gowall
 atim/starship
 dejan/lazygit
+imput/helium

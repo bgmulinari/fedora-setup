@@ -20,5 +20,5 @@ fzf
 starship
 zoxide
 bat
-chromium
+helium-bin
 lazygit
