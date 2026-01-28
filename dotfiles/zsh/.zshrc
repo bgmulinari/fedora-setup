@@ -23,8 +23,3 @@ done
 for config in ~/.zshrc.d/*(N); do
     [[ -f "$config" ]] && source "$config"
 done
-
-# Aliases
-alias ls='ls --color=auto'
-alias ll='ls -lah'
-alias grep='grep --color=auto'

@@ -1,4 +1,8 @@
 # Shared aliases
 
+alias ls='ls --color=auto'
+alias ll='ls -lah'
+alias grep='grep --color=auto'
+
 # Ensure proper color support when connecting to remote systems
 alias ssh='TERM=xterm-256color ssh'
