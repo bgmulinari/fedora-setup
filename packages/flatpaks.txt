@@ -8,3 +8,4 @@ com.usebruno.Bruno
 com.spotify.Client
 com.discordapp.Discord
 com.github.IsmaelMartinez.teams_for_linux
+us.zoom.Zoom
