@@ -13,23 +13,28 @@ DEFAULT_WALLPAPER="SilentPeaks.jpg"  # Wallpaper to apply (from assets/wallpaper
 
 # Install Catppuccin KDE theme (Plasma, color schemes, window decorations - NO cursor)
 install_kde_theme() {
-    if [[ -d "$CATPPUCCIN_DIR/plasma/look-and-feel/Catppuccin-Mocha-Blue" ]]; then
-        info "Catppuccin KDE theme already installed"
-        return 0
+    local theme_dir="$CATPPUCCIN_DIR/plasma/look-and-feel/Catppuccin-Mocha-Blue"
+    local color_file="$CATPPUCCIN_DIR/color-schemes/CatppuccinMochaBlue.colors"
+
+    if [[ -d "$theme_dir" ]]; then
+        log "Updating Catppuccin KDE theme..."
+        # Remove existing files so upstream installer runs cleanly
+        run_as_user rm -rf "$theme_dir"
+        run_as_user rm -f "$color_file"
+    else
+        log "Installing Catppuccin KDE theme..."
     fi
 
-    log "Installing Catppuccin KDE theme..."
     local tmp_dir="/tmp/catppuccin-kde-$$"
 
     run_as_user git clone --depth=1 https://github.com/catppuccin/kde "$tmp_dir"
 
     # Install components separately using debug modes to skip cursor
-    # Args: Flavor=1(Mocha), Accent=13(Blue), WindowDec=2(Classic)
-    run_as_user bash -c "cd '$tmp_dir' && ./install.sh 1 13 2 global"   # Global theme + splash
-    run_as_user bash -c "cd '$tmp_dir' && ./install.sh 1 13 2 aurorae"  # Window decorations (Classic)
+    # Args: Flavor=1(Mocha), Accent=13(Blue), WindowDec=1(Modern)
+    run_as_user bash -c "cd '$tmp_dir' && ./install.sh 1 13 1 global"   # Global theme + splash
 
     # Color scheme: build then manually install (installer bug: debug mode doesn't install)
-    run_as_user bash -c "cd '$tmp_dir' && ./install.sh 1 13 2 color"
+    run_as_user bash -c "cd '$tmp_dir' && ./install.sh 1 13 1 color"
     run_as_user mkdir -p "$CATPPUCCIN_DIR/color-schemes"
     run_as_user bash -c "mv '$tmp_dir/dist/CatppuccinMochaBlue.colors' '$CATPPUCCIN_DIR/color-schemes/'"
     # Note: cursor mode intentionally skipped
@@ -70,12 +75,6 @@ install_vscode_theme() {
         return 0
     fi
 
-    # Check if extension already installed
-    if run_as_user code --list-extensions 2>/dev/null | grep -qi "catppuccin.catppuccin-vsc"; then
-        info "VS Code Catppuccin extension already installed"
-        return 0
-    fi
-
     log "Installing VS Code Catppuccin extension..."
     run_as_user code --install-extension Catppuccin.catppuccin-vsc --force
 
@@ -86,11 +85,6 @@ install_vscode_theme() {
 install_btop_theme() {
     local theme_dir="$ACTUAL_HOME/.config/btop/themes"
     local theme_file="$theme_dir/catppuccin_mocha.theme"
-
-    if [[ -f "$theme_file" ]]; then
-        info "btop Catppuccin theme already installed"
-        return 0
-    fi
 
     log "Installing btop Catppuccin theme..."
     run_as_user mkdir -p "$theme_dir"
@@ -148,11 +142,17 @@ apply_catppuccin_theme() {
 
     local theme_dir="$CATPPUCCIN_DIR/plasma/look-and-feel/Catppuccin-Mocha-Blue"
     if [[ -d "$theme_dir" ]]; then
+        # Patch look-and-feel defaults to use Breeze window decorations instead of Catppuccin aurorae
+        local defaults_file="$theme_dir/contents/defaults"
+        if [[ -f "$defaults_file" ]]; then
+            run_as_user sed -i \
+                -e 's|^library=.*|library=org.kde.breeze|' \
+                -e 's|^theme=.*aurorae.*|theme=Breeze|' \
+                "$defaults_file"
+        fi
+
         log "Applying Catppuccin Mocha Blue look-and-feel..."
         kde_apply_theme "Catppuccin-Mocha-Blue"
-
-        # Window decoration: tiny buttons
-        kde_write --file auroraerc --group CatppuccinMocha-Classic --key ButtonSize 0
     fi
 
     # Apply GTK theme settings if GTK theme is installed
