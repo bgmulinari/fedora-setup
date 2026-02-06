@@ -32,6 +32,15 @@ sudo ./setup.sh --skip kde            # Skip specific modules
 - `packages/` - Plain text lists (one item per line, `#` for comments): `dnf-packages.txt`, `flatpaks.txt`, `copr-repos.txt`, `brew-packages.txt`
 - `config/` - Configuration files: `dnf.conf`
 - `dotfiles/` - GNU Stow packages; each subdirectory mirrors home directory structure
+- `dotfiles/bin/.local/bin/` - Custom commands on `$PATH` (no `.sh` extension, must be `chmod +x`)
+
+## Dotfiles / Stow
+
+After modifying files in `dotfiles/`, restow the package to update symlinks:
+
+```bash
+stow -d dotfiles -t ~ --restow <package>   # e.g. stow -d dotfiles -t ~ --restow bin
+```
 
 ## Key Patterns
 
