@@ -20,8 +20,7 @@ fi
 if [ -d "$INSTALL_DIR" ]; then
     echo -e "${GREEN}Updating existing installation...${NC}"
     cd "$INSTALL_DIR"
-    git stash --quiet 2>/dev/null || true
-    git pull --quiet
+    git pull --rebase --autostash --quiet
 else
     echo -e "${GREEN}Cloning fedora-setup...${NC}"
     git clone --depth=1 "$REPO_URL" "$INSTALL_DIR"

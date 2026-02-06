@@ -94,7 +94,10 @@ change_default_shell() {
 install_oh_my_zsh
 
 # Remove Oh My Zsh's default .zshrc so dotfiles module can stow our custom one
-rm -f "$ACTUAL_HOME/.zshrc"
+# Only remove if it's a regular file, not a stow-managed symlink
+if [[ -f "$ACTUAL_HOME/.zshrc" && ! -L "$ACTUAL_HOME/.zshrc" ]]; then
+    rm -f "$ACTUAL_HOME/.zshrc"
+fi
 
 install_plugins
 install_catppuccin_theme
