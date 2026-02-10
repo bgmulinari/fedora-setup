@@ -62,6 +62,7 @@ fedora-setup/
     ├── dotnet.sh            # .NET SDK installation
     ├── jetbrains.sh         # JetBrains Toolbox installation
     ├── claude.sh            # Claude Code CLI installation
+    ├── devtunnel.sh         # Microsoft Dev Tunnel CLI installation
     ├── docker.sh            # Docker Engine installation
     ├── fonts.sh             # JetBrainsMono Nerd Font and Microsoft fonts
     ├── catppuccin.sh        # Catppuccin theme installation
@@ -93,6 +94,7 @@ sudo ./setup.sh --skip kde            # Skip specific modules
 | `dotnet` | Install .NET SDK to `~/.dotnet` |
 | `jetbrains` | Install JetBrains Toolbox App |
 | `claude` | Install Claude Code CLI |
+| `devtunnel` | Install Microsoft Dev Tunnel CLI |
 | `docker` | Install Docker Engine, add user to docker group |
 | `fonts` | Install JetBrainsMono Nerd Font and Microsoft core fonts |
 | `catppuccin` | Install and apply Catppuccin Mocha theme (KDE, GTK, VS Code, btop) |
