@@ -122,6 +122,7 @@ apply_desktop_settings() {
         panel_ids=$(grep -oP '(?<=\[PlasmaViews\]\[Panel )\d+(?=\])' "$config_file" 2>/dev/null | sort -u)
         for panel_id in $panel_ids; do
             kde_write --file plasmashellrc --group PlasmaViews --group "Panel $panel_id" --key panelOpacity 2
+            kde_write --file plasmashellrc --group PlasmaViews --group "Panel $panel_id" --key panelLengthMode 1
         done
     fi
 }
