@@ -21,7 +21,7 @@ skip() {
 # ── DNF ──────────────────────────────────────────────────────────────
 section "DNF"
 if command -v dnf &>/dev/null; then
-    sudo dnf upgrade --refresh || failures+=("DNF")
+    sudo dnf upgrade -y --refresh --offline || failures+=("DNF")
 else
     skip "dnf"
 fi
@@ -48,6 +48,16 @@ if [[ -f "${ZSH:-$HOME/.oh-my-zsh}/tools/upgrade.sh" ]]; then
     bash "${ZSH:-$HOME/.oh-my-zsh}/tools/upgrade.sh" || failures+=("Oh My Zsh")
 else
     skip "oh-my-zsh"
+fi
+
+# ── .NET tools ─────────────────────────────────────────────────────
+section ".NET tools"
+if command -v dotnet &>/dev/null; then
+    while read -r tool; do
+        dotnet tool update -g "$tool" || failures+=(".NET tool: $tool")
+    done < <(dotnet tool list -g | tail -n +3 | awk '{print $1}')
+else
+    skip "dotnet"
 fi
 
 # ── Neovim plugins ──────────────────────────────────────────────────
