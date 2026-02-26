@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # update-all — update every package manager and tool in one shot
+set -uo pipefail
 
 BOLD='\033[1m'
 CYAN='\033[1;36m'
@@ -9,6 +10,7 @@ GREEN='\033[1;32m'
 RESET='\033[0m'
 
 failures=()
+dnf_upgraded=false
 
 section() {
     echo -e "\n${CYAN}${BOLD}:: $1${RESET}\n"
@@ -21,7 +23,14 @@ skip() {
 # ── DNF ──────────────────────────────────────────────────────────────
 section "DNF"
 if command -v dnf &>/dev/null; then
-    sudo dnf upgrade -y --refresh --offline || failures+=("DNF")
+    _dnf_tmp=$(mktemp)
+    sudo dnf upgrade -y --refresh --offline 2>&1 | tee "$_dnf_tmp"
+    if [[ ${PIPESTATUS[0]} -eq 0 ]]; then
+        grep -qi "Nothing to do" "$_dnf_tmp" || dnf_upgraded=true
+    else
+        failures+=("DNF")
+    fi
+    rm -f "$_dnf_tmp"
 else
     skip "dnf"
 fi
@@ -50,6 +59,14 @@ else
     skip "oh-my-zsh"
 fi
 
+# ── .NET SDK ───────────────────────────────────────────────────────
+section ".NET SDK"
+if [[ -x "$HOME/.dotnet/dotnet" ]]; then
+    dotnet-update || failures+=(".NET SDK")
+else
+    skip ".dotnet"
+fi
+
 # ── .NET tools ─────────────────────────────────────────────────────
 section ".NET tools"
 if command -v dotnet &>/dev/null; then
@@ -60,10 +77,24 @@ else
     skip "dotnet"
 fi
 
+# ── Claude Code ─────────────────────────────────────────────────────
+section "Claude Code"
+if command -v claude &>/dev/null; then
+    claude update || failures+=("Claude Code")
+else
+    skip "claude"
+fi
+
 # ── Neovim plugins ──────────────────────────────────────────────────
 section "Neovim plugins"
 if command -v nvim &>/dev/null; then
-    nvim --headless "+Lazy! sync" +qa || failures+=("Neovim plugins")
+    _nvim_err=$(nvim --headless "+Lazy! sync" +qa 2>&1 >/dev/null)
+    if [[ $? -ne 0 ]]; then
+        echo "$_nvim_err"
+        failures+=("Neovim plugins")
+    else
+        echo "Done."
+    fi
 else
     skip "nvim"
 fi
@@ -84,4 +115,10 @@ if [[ ${#failures[@]} -eq 0 ]]; then
 else
     echo -e "${RED}${BOLD}Failures: ${failures[*]}${RESET}"
     exit 1
+fi
+
+if [[ "$dnf_upgraded" == true ]]; then
+    echo ""
+    echo -e "${YELLOW}${BOLD}DNF packages were staged for offline upgrade.${RESET}"
+    sudo dnf5 offline reboot
 fi

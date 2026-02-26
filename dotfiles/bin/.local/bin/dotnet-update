@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+# dotnet-update — download, install, and clean .NET SDKs for all active channels
+set -uo pipefail
+
+DOTNET_INSTALL_DIR="${1:-$HOME/.dotnet}"
+DOTNET_INSTALL_SCRIPT=$(mktemp)
+trap 'rm -f "$DOTNET_INSTALL_SCRIPT"' EXIT
+
+# Download installer
+curl -fsSL --connect-timeout 15 https://dot.net/v1/dotnet-install.sh -o "$DOTNET_INSTALL_SCRIPT" || {
+    echo "ERROR: Failed to download .NET install script" >&2
+    exit 1
+}
+chmod +x "$DOTNET_INSTALL_SCRIPT"
+
+# Determine channels
+channels=$(dotnet-channels) || {
+    echo "ERROR: Failed to determine .NET channels" >&2
+    exit 1
+}
+
+if [[ -z "$channels" ]]; then
+    echo "ERROR: No .NET channels found" >&2
+    exit 1
+fi
+
+echo "Channels: $channels"
+
+# Install each channel
+failed=0
+for channel in $channels; do
+    echo "Installing .NET SDK $channel..."
+    bash "$DOTNET_INSTALL_SCRIPT" --channel "$channel" --install-dir "$DOTNET_INSTALL_DIR" || {
+        echo "WARNING: Failed to install .NET SDK $channel" >&2
+        failed=1
+    }
+done
+
+# Remove old patch versions, keeping only the latest per major.minor
+if [[ -d "$DOTNET_INSTALL_DIR/sdk" ]]; then
+    prev_channel="" latest=""
+    for ver in $(ls -v "$DOTNET_INSTALL_DIR/sdk/"); do
+        cur_channel="${ver%.*}"
+        if [[ "$cur_channel" == "$prev_channel" && -n "$latest" ]]; then
+            echo "Removing old SDK $latest..."
+            rm -rf "$DOTNET_INSTALL_DIR/sdk/$latest"
+        fi
+        prev_channel="$cur_channel"
+        latest="$ver"
+    done
+fi
+
+exit $failed

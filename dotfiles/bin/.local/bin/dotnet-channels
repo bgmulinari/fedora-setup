@@ -1,0 +1,33 @@
+#!/usr/bin/env python3
+"""Print .NET SDK channels to install (from second-to-last LTS through latest non-EOL)."""
+
+import json, sys, urllib.request
+
+url = "https://dotnetcli.azureedge.net/dotnet/release-metadata/releases-index.json"
+try:
+    data = json.loads(urllib.request.urlopen(url, timeout=15).read())
+except Exception as e:
+    print(f"ERROR: {e}", file=sys.stderr)
+    sys.exit(1)
+
+channels = []
+for r in data["releases-index"]:
+    ver = r.get("channel-version", "")
+    phase = r.get("support-phase", "")
+    release_type = r.get("release-type", "")
+    if phase in ("active", "maintenance"):
+        try:
+            channels.append((tuple(int(x) for x in ver.split(".")), ver, release_type))
+        except ValueError:
+            continue
+
+channels.sort(reverse=True)
+
+lts_versions = [c for c in channels if c[2] == "lts"]
+if len(lts_versions) < 2:
+    floor = channels[-1][0] if channels else (0, 0)
+else:
+    floor = lts_versions[1][0]
+
+result = sorted([c for c in channels if c[0] >= floor])
+print(" ".join(c[1] for c in result))
