@@ -127,7 +127,7 @@ apply_desktop_settings() {
     fi
 }
 
-# Apply clock settings (24-hour format, ISO date)
+# Apply clock settings (font, 24-hour format, ISO date)
 apply_clock_settings() {
     log "Configuring clock settings..."
 
@@ -152,7 +152,31 @@ apply_clock_settings() {
     local group_args
     group_args=$(echo "$clock_section" | sed 's/\[/--group "/g; s/\]/\" /g')
 
-    # Apply 24-hour format and ISO date
+    # Apply font, 24-hour format, and ISO date
+    eval kde_write --file plasma-org.kde.plasma.desktop-appletsrc \
+        $group_args --group Configuration --group Appearance \
+        --key autoFontAndSize false
+
+    eval kde_write --file plasma-org.kde.plasma.desktop-appletsrc \
+        $group_args --group Configuration --group Appearance \
+        --key fontFamily "\"JetBrainsMono Nerd Font\""
+
+    eval kde_write --file plasma-org.kde.plasma.desktop-appletsrc \
+        $group_args --group Configuration --group Appearance \
+        --key fontSize 12
+
+    eval kde_write --file plasma-org.kde.plasma.desktop-appletsrc \
+        $group_args --group Configuration --group Appearance \
+        --key fontStyleName SemiBold
+
+    eval kde_write --file plasma-org.kde.plasma.desktop-appletsrc \
+        $group_args --group Configuration --group Appearance \
+        --key fontWeight 600
+
+    eval kde_write --file plasma-org.kde.plasma.desktop-appletsrc \
+        $group_args --group Configuration --group Appearance \
+        --key boldText true
+
     eval kde_write --file plasma-org.kde.plasma.desktop-appletsrc \
         $group_args --group Configuration --group Appearance \
         --key use24hFormat 2
