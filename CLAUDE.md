@@ -22,6 +22,8 @@ sudo ./setup.sh --skip kde            # Skip specific modules
 
 **Modules** (execution order): repos, multimedia, packages, flatpaks, homebrew, dotnet, jetbrains, claude, devtunnel, docker, fonts, catppuccin, icons, zsh, dotfiles, kde
 
+Order matters: `dotfiles` runs after `zsh` because Oh My Zsh creates a default `~/.zshrc` that our dotfiles must overwrite. `kde` runs last since it depends on themes installed by earlier modules.
+
 ## Architecture
 
 - `auto-install.sh` - Bootstrap script for remote execution; clones repo and runs setup.sh
@@ -32,6 +34,7 @@ sudo ./setup.sh --skip kde            # Skip specific modules
 - `packages/` - Plain text lists (one item per line, `#` for comments): `dnf-packages.txt`, `flatpaks.txt`, `copr-repos.txt`, `brew-packages.txt`
 - `config/` - Configuration files: `dnf.conf`
 - `dotfiles/` - GNU Stow packages; each subdirectory mirrors home directory structure
+- `assets/wallpapers/` - Wallpaper images installed by catppuccin module
 - `dotfiles/bin/.local/bin/` - Custom commands on `$PATH` (no `.sh` extension, must be `chmod +x`)
 
 ## Dotfiles / Stow
@@ -44,9 +47,11 @@ stow -d dotfiles -t ~ --restow <package>   # e.g. stow -d dotfiles -t ~ --restow
 
 ## Key Patterns
 
-- Strict mode: `set -euo pipefail` in all scripts
+- Strict mode: `set -euo pipefail` in setup.sh; module scripts inherit it since they are `source`d (not executed as subprocesses)
 - Idempotent: Check if packages/repos already exist before installing
 - Logging: Use `log()`, `warn()`, `error()`, `info()` functions; all output goes to `setup.log`
+- TUI progress: Call `tui_set_substep "Installing foo..."` inside modules to update the status line in the TUI header
+- KDE settings: Use `kde_available` to guard KDE blocks, `kde_write` to apply settings (wraps kwriteconfig via `run_in_session`)
 - Package groups: Prefix with `@` in dnf-packages.txt (e.g., `@development-tools`)
 - Package removal: Prefix with `-` in dnf-packages.txt (e.g., `-libreoffice*`)
 
