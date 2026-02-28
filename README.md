@@ -20,15 +20,15 @@ sudo ./setup.sh
 
 ## What Gets Installed
 
-- **Repositories** — RPM Fusion (free + nonfree), Flathub, Cisco OpenH264, VS Code repo, COPR repos (ghostty, gowall, starship, lazygit, helium)
-- **DNF Packages** — zsh, code, gh, fastfetch, ghostty, btop, neovim, gowall, fd-find, fzf, starship, zoxide, bat, helium-bin, lazygit (removes libreoffice\*)
+- **Repositories** — RPM Fusion (free + nonfree), Flathub, Cisco OpenH264, VS Code repo, Claude Desktop repo, COPR repos (ghostty, gowall, starship, lazygit, helium)
+- **DNF Packages** — zsh, code, claude-desktop, gh, fastfetch, ghostty, btop, neovim, gowall, fd-find, fzf, starship, zoxide, bat, helium-bin, lazygit (removes libreoffice\*)
 - **Flatpak Apps** — OnlyOffice, Spotify, Discord, Teams for Linux, Zoom
 - **GitHub RPMs** — Bruno (API client)
 - **Homebrew Packages** — lazydocker, codex
 - **Multimedia Codecs** — ffmpeg (full), GStreamer plugins, OpenH264, LAME, VA-API
 - **Docker** — docker-ce, docker-ce-cli, containerd.io, buildx plugin, compose plugin
 - **.NET SDK** — all active non-EOL channels + global tools: csharp-ls, dotnet-ef, dotnet-repl, ilspycmd, linux-dev-certs, powershell, volo.abp.studio.cli
-- **Other Tools** — JetBrains Toolbox, Claude Code CLI, Microsoft Dev Tunnel CLI
+- **Other Tools** — JetBrains Toolbox, Claude Code CLI, Claude Desktop, Microsoft Dev Tunnel CLI
 - **Fonts** — JetBrainsMono Nerd Font, Inter, Microsoft Core Fonts
 - **Themes & Icons** — Catppuccin Mocha Blue (KDE, GTK, VS Code, btop, zsh-syntax-highlighting), Papirus-Dark icons
 - **Shell** — Oh My Zsh + plugins (zsh-autosuggestions, zsh-syntax-highlighting), Starship prompt

@@ -154,12 +154,29 @@ EOF
     log "VS Code repository enabled"
 }
 
+# Enable Claude Desktop repository
+enable_claude_desktop_repo() {
+    log "Enabling Claude Desktop repository..."
+    tui_set_substep "Configuring Claude Desktop repository..."
+
+    if [[ -f /etc/yum.repos.d/claude-desktop.repo ]]; then
+        info "Claude Desktop repository already configured"
+        return
+    fi
+
+    curl -fsSL https://aaddrick.github.io/claude-desktop-debian/rpm/claude-desktop.repo \
+        -o /etc/yum.repos.d/claude-desktop.repo
+
+    log "Claude Desktop repository enabled"
+}
+
 # Execute
 apply_dnf_config
 enable_rpmfusion
 enable_flathub
 enable_copr_repos
 enable_vscode_repo
+enable_claude_desktop_repo
 run_update
 
 log "Repository setup complete!"
