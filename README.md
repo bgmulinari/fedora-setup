@@ -22,7 +22,8 @@ sudo ./setup.sh
 
 - **Repositories** — RPM Fusion (free + nonfree), Flathub, Cisco OpenH264, VS Code repo, COPR repos (ghostty, gowall, starship, lazygit, helium)
 - **DNF Packages** — zsh, code, gh, fastfetch, ghostty, btop, neovim, gowall, fd-find, fzf, starship, zoxide, bat, helium-bin, lazygit (removes libreoffice\*)
-- **Flatpak Apps** — OnlyOffice, Bruno, Spotify, Discord, Teams for Linux, Zoom
+- **Flatpak Apps** — OnlyOffice, Spotify, Discord, Teams for Linux, Zoom
+- **GitHub RPMs** — Bruno (API client)
 - **Homebrew Packages** — lazydocker, codex
 - **Multimedia Codecs** — ffmpeg (full), GStreamer plugins, OpenH264, LAME, VA-API
 - **Docker** — docker-ce, docker-ce-cli, containerd.io, buildx plugin, compose plugin

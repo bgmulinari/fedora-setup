@@ -93,4 +93,19 @@ install_packages() {
 # Execute
 install_packages
 
+# Install Bruno API client from GitHub
+if ! rpm -q bruno &>/dev/null; then
+    log "Installing Bruno from GitHub..."
+    tui_set_substep "Installing Bruno..."
+    BRUNO_RPM_URL=$(curl -fsSL https://api.github.com/repos/usebruno/bruno/releases/latest \
+        | grep -o '"browser_download_url":\s*"[^"]*x86_64_linux\.rpm"' \
+        | head -1 \
+        | cut -d'"' -f4)
+    if [[ -n "$BRUNO_RPM_URL" ]]; then
+        dnf install -y "$BRUNO_RPM_URL" >> "$LOG_FILE" 2>&1 || warn "Failed to install Bruno"
+    else
+        warn "Could not determine Bruno download URL"
+    fi
+fi
+
 log "DNF package installation complete!"
