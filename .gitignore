@@ -6,3 +6,4 @@ setup.log
 *.swp
 .DS_Store
 /.claude/
+dotfiles/nvim/.config/nvim/lazy-lock.json
