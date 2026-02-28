@@ -4,3 +4,4 @@
 # Find packages at https://formulae.brew.sh
 
 lazydocker
+codex
