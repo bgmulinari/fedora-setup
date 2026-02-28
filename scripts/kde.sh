@@ -169,4 +169,8 @@ apply_keybind_settings
 apply_desktop_settings
 apply_clock_settings
 
+# Apply cursor theme last (look-and-feel overrides it)
+log "Setting cursor theme to Breeze_Light..."
+kde_write --file kcminputrc --group Mouse --key cursorTheme "Breeze_Light"
+
 log "KDE Plasma configuration complete!"
