@@ -14,7 +14,7 @@ curl -fsSL --connect-timeout 15 https://dot.net/v1/dotnet-install.sh -o "$DOTNET
 chmod +x "$DOTNET_INSTALL_SCRIPT"
 
 # Determine channels
-channels=$(dotnet-channels) || {
+channels=$("$(dirname "$0")/dotnet-channels") || {
     echo "ERROR: Failed to determine .NET channels" >&2
     exit 1
 }

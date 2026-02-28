@@ -1,0 +1,11 @@
+# .NET Global Tools
+# Add one tool per line
+# Lines starting with # are comments
+
+csharp-ls
+dotnet-ef
+dotnet-repl
+ilspycmd
+linux-dev-certs
+powershell
+volo.abp.studio.cli
