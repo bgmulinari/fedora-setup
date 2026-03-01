@@ -221,11 +221,22 @@ apply_dolphin_settings() {
     kde_write --file dolphinrc --group General --key RememberOpenedTabs false
     kde_write --file dolphinrc --group General --key HomeUrl "file://$ACTUAL_HOME"
 
-    # Default view mode: Details (0=Icons, 1=Compact, 2=Details)
-    kde_write --file dolphinrc --group General --key ViewMode 2
-
     # Remember display style for each folder
     kde_write --file dolphinrc --group General --key GlobalViewProps false
+
+    # Default view mode: Details (0=Icons, 1=Compact, 2=Details)
+    # Must be set in view properties file — dolphinrc ViewMode is ignored when GlobalViewProps=false
+    run_as_user mkdir -p "$ACTUAL_HOME/.local/share/dolphin/view_properties/global"
+    local view_props="$ACTUAL_HOME/.local/share/dolphin/view_properties/global/.directory"
+    kde_write --file "$view_props" --group Dolphin --key ViewMode 2
+
+    # Details view settings
+    kde_write --file dolphinrc --group DetailsMode --key ExpandableFolders false
+    kde_write --file dolphinrc --group DetailsMode --key PreviewSize 22
+    kde_write --file dolphinrc --group DetailsMode --key RightPadding 0
+
+    # Hide menu bar
+    kde_write --file dolphinrc --group MainWindow --key MenuBar Disabled
 
     # Hide built-in "Open Terminal Here" when Ghostty provides its own
     if command -v ghostty &>/dev/null; then
