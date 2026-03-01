@@ -1,4 +1,4 @@
-# Fedora Auto-Setup
+# Fedora KDE Plasma Desktop Setup
 
 Automated setup script for fresh Fedora (KDE Plasma) installations. Install packages, configure repositories, manage dotfiles, and apply system settings in one command.
 
