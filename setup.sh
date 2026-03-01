@@ -77,7 +77,7 @@ run_in_session() {
 # Available modules (order matters!)
 # dotfiles must run AFTER modules that create default configs (e.g., zsh installs Oh My Zsh
 # which creates ~/.zshrc). Running dotfiles last ensures our custom configs overwrite defaults.
-ALL_MODULES="repos multimedia packages flatpaks homebrew dotnet jetbrains claude devtunnel docker fonts catppuccin icons zsh dotfiles kde"
+ALL_MODULES="repos multimedia packages flatpaks homebrew dotnet jetbrains claude-code devtunnel docker fonts catppuccin icons zsh dotfiles kde"
 
 # Module descriptions (single source of truth for usage, TUI, etc.)
 declare -A MODULE_DESC=(
@@ -88,7 +88,7 @@ declare -A MODULE_DESC=(
     [homebrew]="Homebrew and packages from brew-packages.txt"
     [dotnet]=".NET SDK and global tools"
     [jetbrains]="JetBrains Toolbox App"
-    [claude]="Claude Code CLI"
+    [claude-code]="Claude Code CLI"
     [devtunnel]="Microsoft Dev Tunnel CLI"
     [docker]="Docker Engine"
     [fonts]="JetBrainsMono Nerd Font · Inter · Microsoft fonts"
@@ -275,7 +275,7 @@ main() {
     run_module "homebrew"
     run_module "dotnet"
     run_module "jetbrains"
-    run_module "claude"
+    run_module "claude-code"
     run_module "devtunnel"
     run_module "docker"
     run_module "fonts"
