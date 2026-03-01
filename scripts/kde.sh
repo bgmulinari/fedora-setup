@@ -127,6 +127,33 @@ apply_desktop_settings() {
     fi
 }
 
+# Apply application launcher icon
+apply_launcher_settings() {
+    log "Configuring application launcher..."
+
+    local config_file="$ACTUAL_HOME/.config/plasma-org.kde.plasma.desktop-appletsrc"
+    if [[ ! -f "$config_file" ]]; then
+        info "Plasma applet config not found, skipping launcher settings"
+        return 0
+    fi
+
+    local launcher_section
+    launcher_section=$(grep -B2 "plugin=org.kde.plasma.kickoff" "$config_file" | \
+        grep -oP '\[Containments\]\[\d+\]\[Applets\]\[\d+\]' | head -1)
+
+    if [[ -z "$launcher_section" ]]; then
+        info "Kickoff launcher applet not found, skipping launcher settings"
+        return 0
+    fi
+
+    local group_args
+    group_args=$(echo "$launcher_section" | sed 's/\[/--group "/g; s/\]/\" /g')
+
+    eval kde_write --file plasma-org.kde.plasma.desktop-appletsrc \
+        $group_args --group Configuration --group General \
+        --key icon "start-here-fedora"
+}
+
 # Apply clock settings (font, 24-hour format, ISO date)
 apply_clock_settings() {
     log "Configuring clock settings..."
@@ -191,6 +218,7 @@ apply_conditional_resource_settings
 apply_terminal_settings
 apply_keybind_settings
 apply_desktop_settings
+apply_launcher_settings
 apply_clock_settings
 
 # Apply cursor theme last (look-and-feel overrides it)
