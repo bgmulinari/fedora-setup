@@ -217,6 +217,10 @@ apply_clock_settings() {
 apply_dolphin_settings() {
     log "Configuring Dolphin file manager..."
 
+    # Always start at home directory instead of restoring last session
+    kde_write --file dolphinrc --group General --key RememberOpenedTabs false
+    kde_write --file dolphinrc --group General --key HomeUrl "file://$ACTUAL_HOME"
+
     # Default view mode: Details (0=Icons, 1=Compact, 2=Details)
     kde_write --file dolphinrc --group General --key ViewMode 2
 
