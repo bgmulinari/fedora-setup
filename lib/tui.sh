@@ -63,7 +63,7 @@ tui_banner() {
 
 # Build a labeled option string for the module picker (reads from MODULE_DESC in setup.sh)
 _tui_module_label() {
-    printf "%-12s %s" "$1" "${MODULE_DESC[$1]}"
+    printf "%-19s %s" "$1" "${MODULE_DESC[$1]}"
 }
 
 tui_select_modules() {

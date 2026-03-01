@@ -18,7 +18,7 @@ sudo ./setup.sh --only repos,packages # Run specific modules only
 sudo ./setup.sh --skip kde            # Skip specific modules
 ```
 
-**Modules** (execution order): repos, multimedia, packages, flatpaks, homebrew, dotnet, jetbrains, claude-code, devtunnel, docker, fonts, catppuccin, icons, zsh, dotfiles, kde
+**Modules** (execution order): repos, multimedia, packages, flatpaks, homebrew, dotnet, jetbrains-toolbox, claude-code, devtunnel, docker, fonts, catppuccin, icons, zsh, dotfiles, kde
 
 Order matters: `dotfiles` runs after `zsh` because Oh My Zsh creates a default `~/.zshrc` that our dotfiles must overwrite. `kde` runs last since it depends on themes installed by earlier modules.
 
