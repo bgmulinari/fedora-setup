@@ -8,17 +8,7 @@ set -euo pipefail
 
 # Script directory
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-LOG_FILE="$SCRIPT_DIR/setup.log"
-
-# Colors for output
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-NC='\033[0m' # No Color
-
-# Export colors for TUI library
-export RED GREEN YELLOW BLUE NC
+LOG_FILE=""
 
 # Script title
 SCRIPT_TITLE="Fedora KDE Plasma Desktop Setup"
@@ -26,25 +16,22 @@ export SCRIPT_TITLE
 
 # Logging functions
 log() {
-    local msg="[$(date '+%Y-%m-%d %H:%M:%S')] $1"
-    echo -e "${GREEN}==>${NC} $1"
-    echo "$msg" >> "$LOG_FILE"
+    [[ -t 2 ]] && gum log --level info "$1"
+    [[ -n "$LOG_FILE" ]] && gum log --level info --time datetime --file "$LOG_FILE" "$1"
 }
 
 warn() {
-    local msg="[$(date '+%Y-%m-%d %H:%M:%S')] WARNING: $1"
-    echo -e "${YELLOW}==> WARNING:${NC} $1"
-    echo "$msg" >> "$LOG_FILE"
+    [[ -t 2 ]] && gum log --level warn "$1"
+    [[ -n "$LOG_FILE" ]] && gum log --level warn --time datetime --file "$LOG_FILE" "$1"
 }
 
 error() {
-    local msg="[$(date '+%Y-%m-%d %H:%M:%S')] ERROR: $1"
-    echo -e "${RED}==> ERROR:${NC} $1" >&2
-    echo "$msg" >> "$LOG_FILE"
+    [[ -t 2 ]] && gum log --level error "$1"
+    [[ -n "$LOG_FILE" ]] && gum log --level error --time datetime --file "$LOG_FILE" "$1"
 }
 
 info() {
-    echo -e "${BLUE}    $1${NC}"
+    gum style --faint "  $1"
 }
 
 # User context for running commands as actual user (not root) under sudo
@@ -185,7 +172,7 @@ run_module() {
 
     if ! should_run_module "$module"; then
         tui_skip_module "$module"
-        echo "[$(date '+%Y-%m-%d %H:%M:%S')] Skipped module: $module" >> "$LOG_FILE"
+        gum log --level info --time datetime --file "$LOG_FILE" "Skipped module: $module"
         return 0
     fi
 
@@ -196,7 +183,7 @@ run_module() {
     fi
 
     tui_start_module "$module"
-    echo "[$(date '+%Y-%m-%d %H:%M:%S')] Running module: $module" >> "$LOG_FILE"
+    gum log --level info --time datetime --file "$LOG_FILE" "Running module: $module"
 
     if tui_run_module "$module" "$script"; then
         tui_end_module "$module" "done"
@@ -219,14 +206,11 @@ export -f log warn error info run_as_user run_in_session
 
 # Main execution
 main() {
-    parse_args "$@"
-
-    # Log start
-    echo "=== Setup started at $(date) ===" >> "$LOG_FILE"
-
-    # Initialize TUI
+    # Initialize TUI (must run before parse_args so gum is available for error())
     tui_init
     trap 'tui_cleanup' EXIT
+
+    parse_args "$@"
 
     # Show banner
     tui_banner
@@ -255,6 +239,12 @@ main() {
         echo "Setup cancelled."
         exit 0
     fi
+
+    # Initialize log file (only after user confirms)
+    mkdir -p "$SCRIPT_DIR/logs"
+    LOG_FILE="$SCRIPT_DIR/logs/setup-$(date '+%Y-%m-%d_%H-%M-%S').log"
+    export LOG_FILE
+    gum log --level info --time datetime --file "$LOG_FILE" "Setup started"
 
     # Clear selection/plan screen and redraw banner for progress view
     tui_banner

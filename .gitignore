@@ -1,4 +1,4 @@
-setup.log
+/logs/
 *.log
 .env
 .env.*

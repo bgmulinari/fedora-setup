@@ -159,9 +159,7 @@ tui_skip_module() {
 }
 
 tui_set_substep() {
-    if [[ -n "${LOG_FILE:-}" ]]; then
-        echo "[$(date '+%Y-%m-%d %H:%M:%S')] SUBSTEP: $1" >> "$LOG_FILE"
-    fi
+    [[ -n "${LOG_FILE:-}" ]] && gum log --level debug --time datetime --file "$LOG_FILE" "$1"
 }
 
 tui_summary() {
