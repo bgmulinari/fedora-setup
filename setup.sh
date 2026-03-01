@@ -86,6 +86,16 @@ declare -A MODULE_DESC=(
     [kde]="KDE Plasma settings and keybindings"
 )
 
+# Module dependencies: module -> space-separated list of required modules
+# Only hard dependencies that cause real failures are listed here.
+# KDE's soft dependencies (catppuccin, icons, fonts) are handled gracefully in kde.sh.
+declare -A MODULE_DEPS=(
+    [multimedia]="repos"
+    [packages]="repos"
+    [flatpaks]="repos"
+    [dotfiles]="zsh"
+)
+
 # Source TUI library (after ALL_MODULES is defined)
 source "$SCRIPT_DIR/lib/tui.sh"
 
@@ -165,6 +175,67 @@ should_run_module() {
     return 0
 }
 
+# Resolve implicit module dependencies.
+# Auto-includes missing dependencies in ONLY_MODULES or removes them from SKIP_MODULES.
+# Sets DEPS_ADDED_NOTICE with explanation. Returns 0 if deps were added, 1 otherwise.
+resolve_dependencies() {
+    [[ -z "$ONLY_MODULES" && -z "$SKIP_MODULES" ]] && return 1
+
+    DEPS_ADDED_NOTICE=""
+    local changed=true
+    declare -A added_deps=()
+
+    # Check if a module is in the current selection
+    _is_selected() {
+        local mod="$1"
+        if [[ -n "$ONLY_MODULES" ]]; then
+            [[ ",$ONLY_MODULES," == *",$mod,"* ]]
+        else
+            [[ ",$SKIP_MODULES," != *",$mod,"* ]]
+        fi
+    }
+
+    # Add a missing dependency to the selection
+    _add_module() {
+        local dep="$1"
+        if [[ -n "$ONLY_MODULES" ]]; then
+            ONLY_MODULES="$dep,$ONLY_MODULES"
+        else
+            SKIP_MODULES=$(echo ",$SKIP_MODULES," | sed "s/,$dep,/,/g" | sed 's/^,//; s/,$//')
+        fi
+    }
+
+    while $changed; do
+        changed=false
+        for module in "${!MODULE_DEPS[@]}"; do
+            _is_selected "$module" || continue
+
+            for dep in ${MODULE_DEPS[$module]}; do
+                if ! _is_selected "$dep"; then
+                    _add_module "$dep"
+                    changed=true
+                    if [[ -n "${added_deps[$dep]:-}" ]]; then
+                        added_deps[$dep]+=" $module"
+                    else
+                        added_deps[$dep]="$module"
+                    fi
+                fi
+            done
+        done
+    done
+
+    if [[ ${#added_deps[@]} -gt 0 ]]; then
+        for dep in "${!added_deps[@]}"; do
+            local dependents="${added_deps[$dep]}"
+            dependents="${dependents// /, }"
+            DEPS_ADDED_NOTICE+="  $dep (required by $dependents)\n"
+        done
+        return 0
+    fi
+
+    return 1
+}
+
 # Run a module script
 run_module() {
     local module="$1"
@@ -220,6 +291,14 @@ main() {
         echo ""
         echo "No modules selected to run. Setup cancelled."
         exit 0
+    fi
+
+    # Resolve implicit module dependencies
+    DEPS_ADDED_NOTICE=""
+    if resolve_dependencies; then
+        echo ""
+        gum style --bold --foreground 11 "Auto-included dependencies:"
+        printf "%b" "$DEPS_ADDED_NOTICE"
     fi
 
     # Build run/skip lists from selection and show plan

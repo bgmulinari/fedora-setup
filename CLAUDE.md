@@ -52,12 +52,14 @@ stow -d dotfiles -t ~ --restow <package>   # e.g. stow -d dotfiles -t ~ --restow
 - KDE settings: Use `kde_available` to guard KDE blocks, `kde_write` to apply settings (wraps kwriteconfig via `run_in_session`)
 - Package groups: Prefix with `@` in dnf-packages.txt (e.g., `@development-tools`)
 - Package removal: Prefix with `-` in dnf-packages.txt (e.g., `-libreoffice*`)
+- Dependencies: Hard module dependencies declared in `MODULE_DEPS` in setup.sh; auto-resolved after module selection. Only enforce deps that cause real failures (e.g., `repos` for `packages`/`multimedia`/`flatpaks`, `zsh` for `dotfiles`)
 
 ## Adding New Modules
 
 1. Create `scripts/newmodule.sh`
 2. Add module name to `ALL_MODULES` in setup.sh
 3. Add `run_module "newmodule"` call in main()
+4. If the module has hard dependencies, add an entry to `MODULE_DEPS`
 
 ## Running Commands as User (Not Root)
 
