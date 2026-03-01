@@ -213,6 +213,17 @@ apply_clock_settings() {
         --key dateFormat isoDate
 }
 
+# Apply Dolphin file manager settings
+apply_dolphin_settings() {
+    log "Configuring Dolphin file manager..."
+
+    # Default view mode: Details (0=Icons, 1=Compact, 2=Details)
+    kde_write --file dolphinrc --group General --key ViewMode 2
+
+    # Remember display style for each folder
+    kde_write --file dolphinrc --group General --key GlobalViewProps false
+}
+
 # Execute
 apply_conditional_resource_settings
 apply_terminal_settings
@@ -220,6 +231,7 @@ apply_keybind_settings
 apply_desktop_settings
 apply_launcher_settings
 apply_clock_settings
+apply_dolphin_settings
 
 # Apply cursor theme last (look-and-feel overrides it)
 log "Setting cursor theme to Breeze_Light..."
