@@ -63,7 +63,7 @@ install_packages() {
 
     local pkg_count=0
     for pkg in "${packages[@]}"; do
-        ((pkg_count++))
+        ((++pkg_count))
         tui_set_substep "Installing $pkg_count/$pkg_total: $pkg"
 
         if run_as_user "$BREW_PREFIX/bin/brew" list "$pkg" &>/dev/null; then

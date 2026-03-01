@@ -48,7 +48,7 @@ install_tools() {
 
     local tool_count=0
     for tool in "${tools[@]}"; do
-        ((tool_count++))
+        ((++tool_count))
         tui_set_substep "Installing $tool_count/$tool_total: $tool"
         run_as_user "$DOTNET_INSTALL_DIR/dotnet" tool install -g "$tool" >> "$LOG_FILE" 2>&1 || warn "Failed to install: $tool"
     done

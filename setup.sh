@@ -20,6 +20,10 @@ NC='\033[0m' # No Color
 # Export colors for TUI library
 export RED GREEN YELLOW BLUE NC
 
+# Script title
+SCRIPT_TITLE="Fedora KDE Plasma Desktop Setup"
+export SCRIPT_TITLE
+
 # Logging functions
 log() {
     local msg="[$(date '+%Y-%m-%d %H:%M:%S')] $1"
@@ -59,7 +63,12 @@ run_as_user() {
 # Run command in user's desktop session (for KDE, D-Bus, GUI apps)
 run_in_session() {
     if [[ -n "${SUDO_USER:-}" ]]; then
-        systemd-run --uid="$(id -u "$SUDO_USER")" --machine="$SUDO_USER@" --user "$@"
+        local uid
+        uid=$(id -u "$SUDO_USER")
+        sudo -u "$SUDO_USER" \
+            XDG_RUNTIME_DIR="/run/user/$uid" \
+            DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$uid/bus" \
+            "$@"
     else
         "$@"
     fi
@@ -70,6 +79,26 @@ run_in_session() {
 # which creates ~/.zshrc). Running dotfiles last ensures our custom configs overwrite defaults.
 ALL_MODULES="repos multimedia packages flatpaks homebrew dotnet jetbrains claude devtunnel docker fonts catppuccin icons zsh dotfiles kde"
 
+# Module descriptions (single source of truth for usage, TUI, etc.)
+declare -A MODULE_DESC=(
+    [repos]="RPM Fusion · Flathub · COPR repositories"
+    [multimedia]="Video codecs and hardware acceleration"
+    [packages]="DNF packages from dnf-packages.txt"
+    [flatpaks]="Flatpak apps from flatpaks.txt"
+    [homebrew]="Homebrew and packages from brew-packages.txt"
+    [dotnet]=".NET SDK and global tools"
+    [jetbrains]="JetBrains Toolbox App"
+    [claude]="Claude Code CLI"
+    [devtunnel]="Microsoft Dev Tunnel CLI"
+    [docker]="Docker Engine"
+    [fonts]="JetBrainsMono Nerd Font · Inter · Microsoft fonts"
+    [catppuccin]="Catppuccin Mocha theme for KDE · GTK · VS Code · btop"
+    [icons]="Papirus icon theme"
+    [zsh]="Oh My Zsh with plugins"
+    [dotfiles]="Symlink dotfiles via GNU Stow"
+    [kde]="KDE Plasma settings and keybindings"
+)
+
 # Source TUI library (after ALL_MODULES is defined)
 source "$SCRIPT_DIR/lib/tui.sh"
 
@@ -79,40 +108,24 @@ source "$SCRIPT_DIR/lib/kde.sh"
 # Default settings
 SKIP_MODULES=""
 ONLY_MODULES=""
-TUI_DISABLED=0
-SKIP_CONFIRM=0
 
 # Parse command line arguments
 usage() {
     cat << EOF
-Usage: $(basename "$0") [OPTIONS]
+$SCRIPT_TITLE
 
-Fedora Auto-Setup Script
+Usage: $(basename "$0") [OPTIONS]
 
 OPTIONS:
     -h, --help          Show this help message
-    -y, --yes           Skip confirmation prompt
     --skip MODULES      Skip specified modules (comma-separated)
     --only MODULES      Run only specified modules (comma-separated)
-    --no-tui            Disable TUI mode (use plain output)
 
 MODULES:
-    repos       Enable RPM Fusion, Flathub, COPR repositories
-    multimedia  Install video codecs and hardware acceleration
-    packages    Install DNF packages from packages/dnf-packages.txt
-    flatpaks    Install Flatpak apps from packages/flatpaks.txt
-    homebrew    Install Homebrew and packages from brew-packages.txt
-    jetbrains   Install JetBrains Toolbox App
-    claude      Install Claude Code CLI
-    devtunnel   Install Microsoft Dev Tunnel CLI
-    docker      Install Docker Engine from official repository
-    fonts       Install JetBrainsMono Nerd Font and Microsoft fonts
-    zsh         Install Oh My Zsh with plugins and Catppuccin theme
-    dotfiles    Symlink dotfiles from dotfiles/ to home directory
-    kde         Apply KDE Plasma settings
+$(for mod in $ALL_MODULES; do printf "    %-12s %s\n" "$mod" "${MODULE_DESC[$mod]}"; done)
 
 EXAMPLES:
-    $(basename "$0")                      # Run full setup
+    $(basename "$0")    # Run full setup
     $(basename "$0") --only repos,packages
     $(basename "$0") --skip flatpaks,kde
 
@@ -133,14 +146,6 @@ parse_args() {
             --only)
                 ONLY_MODULES="$2"
                 shift 2
-                ;;
-            --no-tui)
-                TUI_DISABLED=1
-                shift
-                ;;
-            -y|--yes)
-                SKIP_CONFIRM=1
-                shift
                 ;;
             *)
                 error "Unknown option: $1"
@@ -173,40 +178,6 @@ should_run_module() {
     return 0
 }
 
-# Show execution plan
-show_plan() {
-    local modules_to_run=""
-    local modules_to_skip=""
-
-    for module in $ALL_MODULES; do
-        if should_run_module "$module"; then
-            modules_to_run="$modules_to_run $module"
-        else
-            modules_to_skip="$modules_to_skip $module"
-        fi
-    done
-
-    echo ""
-    echo -e "${BLUE}Modules to run:${NC}"
-    for module in $modules_to_run; do
-        echo -e "  ${GREEN}+${NC} $module"
-    done
-
-    if [[ -n "$modules_to_skip" ]]; then
-        echo ""
-        echo -e "${BLUE}Modules to skip:${NC}"
-        for module in $modules_to_skip; do
-            echo -e "  ${YELLOW}-${NC} $module"
-        done
-    fi
-    echo ""
-
-    echo -e "${YELLOW}WARNING:${NC} This setup may overwrite existing configuration files"
-    echo -e "         (e.g., .zshrc, .bashrc, KDE settings). Backup any custom"
-    echo -e "         configurations before proceeding."
-    echo ""
-}
-
 # Run a module script
 run_module() {
     local module="$1"
@@ -214,7 +185,7 @@ run_module() {
 
     if ! should_run_module "$module"; then
         tui_skip_module "$module"
-        info "Skipping $module (excluded by options)"
+        echo "[$(date '+%Y-%m-%d %H:%M:%S')] Skipped module: $module" >> "$LOG_FILE"
         return 0
     fi
 
@@ -225,10 +196,9 @@ run_module() {
     fi
 
     tui_start_module "$module"
-    log "Running module: $module"
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] Running module: $module" >> "$LOG_FILE"
 
-    # shellcheck source=/dev/null
-    if source "$script"; then
+    if tui_run_module "$module" "$script"; then
         tui_end_module "$module" "done"
     else
         tui_end_module "$module" "error"
@@ -254,28 +224,43 @@ main() {
     # Log start
     echo "=== Setup started at $(date) ===" >> "$LOG_FILE"
 
-    # Show banner and confirmation before TUI takes over
-    echo ""
-    echo -e "${BLUE}╔══════════════════════════════════════════╗${NC}"
-    echo -e "${BLUE}║         Fedora Auto-Setup Script         ║${NC}"
-    echo -e "${BLUE}╚══════════════════════════════════════════╝${NC}"
+    # Initialize TUI
+    tui_init
+    trap 'tui_cleanup' EXIT
 
-    # Show execution plan and ask for confirmation
-    show_plan
-    if [[ $SKIP_CONFIRM -eq 0 ]]; then
-        read -rp "Proceed with setup? [y/N] " response
-        if [[ ! "$response" =~ ^[Yy]$ ]]; then
-            echo "Setup cancelled."
-            exit 0
-        fi
+    # Show banner
+    tui_banner
+
+    # Interactive module selection
+    if ! tui_select_modules; then
         echo ""
+        echo "No modules selected to run. Setup cancelled."
+        exit 0
     fi
 
-    # Initialize TUI (unless disabled)
-    if [[ $TUI_DISABLED -eq 0 ]]; then
-        tui_init
-        trap 'tui_cleanup' EXIT
+    # Build run/skip lists from selection and show plan
+    local modules_to_run="" modules_to_skip=""
+    local module
+    for module in $ALL_MODULES; do
+        if should_run_module "$module"; then
+            modules_to_run+=" $module"
+        else
+            modules_to_skip+=" $module"
+        fi
+    done
+    tui_show_plan "$modules_to_run" "$modules_to_skip"
+
+    # Confirm before running
+    if ! tui_confirm "Proceed with setup?"; then
+        echo "Setup cancelled."
+        exit 0
     fi
+
+    # Clear selection/plan screen and redraw banner for progress view
+    tui_banner
+
+    echo ""
+    gum style --bold "Installing selected modules... this may take some time. Please wait!"
 
     # Check privileges (skip for dotfiles-only runs as regular user)
     if should_run_module "repos" || should_run_module "multimedia" || should_run_module "packages" || should_run_module "fonts"; then
@@ -300,16 +285,13 @@ main() {
     run_module "dotfiles"
     run_module "kde"
 
-    echo ""
-    log "Setup complete!"
-    echo ""
-    info "Log file: $LOG_FILE"
+    # Show summary
+    tui_summary
 
     # Prompt for reboot if system packages were installed
     if should_run_module "packages"; then
         echo ""
-        read -rp "Reboot now? [y/N] " response
-        if [[ "$response" =~ ^[Yy]$ ]]; then
+        if tui_confirm "Reboot now?"; then
             reboot
         fi
     fi

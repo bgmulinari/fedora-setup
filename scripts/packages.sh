@@ -59,7 +59,7 @@ install_packages() {
         local group_count=0
         local group_total=${#groups[@]}
         for group in "${groups[@]}"; do
-            ((group_count++))
+            ((++group_count))
             tui_set_substep "Installing group $group_count/$group_total: $group"
             info "Installing group: $group"
             dnf group install -y "$group" >> "$LOG_FILE" 2>&1 || warn "Failed to install group: $group"
@@ -79,7 +79,7 @@ install_packages() {
             warn "Some packages failed to install, trying one by one..."
             local pkg_count=0
             for pkg in "${packages[@]}"; do
-                ((pkg_count++))
+                ((++pkg_count))
                 tui_set_substep "Installing package $pkg_count/$pkg_total: $pkg"
                 dnf install -y "$pkg" >> "$LOG_FILE" 2>&1 || warn "Failed to install: $pkg"
             done

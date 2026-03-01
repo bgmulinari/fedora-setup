@@ -16,6 +16,12 @@ if ! command -v git &> /dev/null; then
     sudo dnf install -y git
 fi
 
+# Ensure gum is installed (required for TUI)
+if ! command -v gum &> /dev/null; then
+    echo -e "${GREEN}Installing gum...${NC}"
+    sudo dnf install -y gum
+fi
+
 # Clone or update repository
 if [ -d "$INSTALL_DIR" ]; then
     echo -e "${GREEN}Updating existing installation...${NC}"

@@ -20,6 +20,7 @@ install_kde_theme() {
         log "Updating Catppuccin KDE theme..."
         # Remove existing files so upstream installer runs cleanly
         run_as_user rm -rf "$theme_dir"
+        run_as_user rm -rf "$CATPPUCCIN_DIR/kpackage/generic/Catppuccin-Mocha-Blue"
         run_as_user rm -f "$color_file"
     else
         log "Installing Catppuccin KDE theme..."
@@ -34,6 +35,8 @@ install_kde_theme() {
     run_as_user bash -c "cd '$tmp_dir' && ./install.sh 1 13 1 global"   # Global theme + splash
 
     # Color scheme: build then manually install (installer bug: debug mode doesn't install)
+    # Remove dist/ from global step so color step can recreate it
+    run_as_user rm -rf "$tmp_dir/dist"
     run_as_user bash -c "cd '$tmp_dir' && ./install.sh 1 13 1 color"
     run_as_user mkdir -p "$CATPPUCCIN_DIR/color-schemes"
     run_as_user bash -c "mv '$tmp_dir/dist/CatppuccinMochaBlue.colors' '$CATPPUCCIN_DIR/color-schemes/'"
@@ -114,7 +117,7 @@ install_wallpapers() {
         filename=$(basename "$wallpaper")
         if [[ ! -f "$dest_dir/$filename" ]]; then
             run_as_user cp "$wallpaper" "$dest_dir/$filename"
-            ((count++))
+            ((++count))
         fi
     done
 

@@ -47,7 +47,7 @@ install_flatpaks() {
 
     local app_count=0
     for app in "${apps[@]}"; do
-        ((app_count++))
+        ((++app_count))
         tui_set_substep "Installing Flatpak $app_count/$app_total: $app"
         # Check if already installed
         if flatpak list --app 2>/dev/null | grep -q "$app"; then

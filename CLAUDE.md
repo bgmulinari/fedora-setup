@@ -14,8 +14,6 @@ sh <(curl -L https://raw.githubusercontent.com/bgmulinari/fedora-setup/master/au
 
 # Local install
 sudo ./setup.sh                       # Run full setup (with TUI)
-sudo ./setup.sh --yes                 # Skip confirmation prompt
-sudo ./setup.sh --no-tui              # Run with plain text output
 sudo ./setup.sh --only repos,packages # Run specific modules only
 sudo ./setup.sh --skip kde            # Skip specific modules
 ```
@@ -28,9 +26,9 @@ Order matters: `dotfiles` runs after `zsh` because Oh My Zsh creates a default `
 
 - `auto-install.sh` - Bootstrap script for remote execution; clones repo and runs setup.sh
 - `setup.sh` - Main orchestrator; exports shared functions (`log`, `warn`, `error`, `info`, `run_as_user`, `run_in_session`) and variables (`SCRIPT_DIR`, `LOG_FILE`, `ACTUAL_USER`, `ACTUAL_HOME`) to child scripts
-- `lib/tui.sh` - TUI library providing split-view terminal interface with progress tracking
+- `lib/tui.sh` - TUI library using gum (charmbracelet/gum) for styled output, module selection, and progress
 - `lib/kde.sh` - KDE helper library with kwriteconfig detection and wrapper functions (`kde_write`, `kde_apply_theme`, `kde_available`)
-- `scripts/*.sh` - Module scripts sourced by setup.sh; each handles one concern
+- `scripts/*.sh` - Module scripts run in subshells by setup.sh (via `gum spin`); each handles one concern
 - `packages/` - Plain text lists (one item per line, `#` for comments): `dnf-packages.txt`, `flatpaks.txt`, `copr-repos.txt`, `brew-packages.txt`
 - `config/` - Configuration files: `dnf.conf`
 - `dotfiles/` - GNU Stow packages; each subdirectory mirrors home directory structure
@@ -47,10 +45,10 @@ stow -d dotfiles -t ~ --restow <package>   # e.g. stow -d dotfiles -t ~ --restow
 
 ## Key Patterns
 
-- Strict mode: `set -euo pipefail` in setup.sh; module scripts inherit it since they are `source`d (not executed as subprocesses)
+- Strict mode: `set -euo pipefail` in setup.sh; module scripts run in subshells (via `gum spin`) with the same flags and inherit exported functions/variables
 - Idempotent: Check if packages/repos already exist before installing
 - Logging: Use `log()`, `warn()`, `error()`, `info()` functions; all output goes to `setup.log`
-- TUI progress: Call `tui_set_substep "Installing foo..."` inside modules to update the status line in the TUI header
+- TUI progress: Call `tui_set_substep "Installing foo..."` inside modules to log progress to the log file
 - KDE settings: Use `kde_available` to guard KDE blocks, `kde_write` to apply settings (wraps kwriteconfig via `run_in_session`)
 - Package groups: Prefix with `@` in dnf-packages.txt (e.g., `@development-tools`)
 - Package removal: Prefix with `-` in dnf-packages.txt (e.g., `-libreoffice*`)
