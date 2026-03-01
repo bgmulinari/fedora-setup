@@ -11,6 +11,7 @@ window-width = 110
 window-padding-x = 8
 window-padding-y = 8
 window-decoration = server
+window-inherit-working-directory = true
 
 # Background
 background-opacity = 0.90

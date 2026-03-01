@@ -222,6 +222,11 @@ apply_dolphin_settings() {
 
     # Remember display style for each folder
     kde_write --file dolphinrc --group General --key GlobalViewProps false
+
+    # Hide built-in "Open Terminal Here" when Ghostty provides its own
+    if command -v ghostty &>/dev/null; then
+        kde_write --file dolphinrc --group ContextMenu --key ShowOpenTerminal false
+    fi
 }
 
 # Execute
