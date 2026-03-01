@@ -228,7 +228,7 @@ apply_dolphin_settings() {
     # Must be set in view properties file — dolphinrc ViewMode is ignored when GlobalViewProps=false
     run_as_user mkdir -p "$ACTUAL_HOME/.local/share/dolphin/view_properties/global"
     local view_props="$ACTUAL_HOME/.local/share/dolphin/view_properties/global/.directory"
-    kde_write --file "$view_props" --group Dolphin --key ViewMode 2
+    kde_write --file "$view_props" --group Dolphin --key ViewMode 1
 
     # Details view settings
     kde_write --file dolphinrc --group DetailsMode --key ExpandableFolders false
