@@ -232,6 +232,7 @@ main() {
             modules_to_skip+=" $module"
         fi
     done
+    TUI_STEP_TOTAL=$(echo "$modules_to_run" | wc -w)
     tui_show_plan "$modules_to_run" "$modules_to_skip"
 
     # Confirm before running

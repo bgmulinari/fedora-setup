@@ -11,6 +11,10 @@
 # Module status: pending, running, done, skipped, error
 declare -A TUI_MODULE_STATUS=()
 
+# Step counter for progress display
+TUI_STEP_CURRENT=0
+TUI_STEP_TOTAL=0
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Core TUI Functions
 # ─────────────────────────────────────────────────────────────────────────────
@@ -128,13 +132,14 @@ tui_confirm() {
 tui_start_module() {
     local module="$1"
     TUI_MODULE_STATUS["$module"]="running"
+    ((++TUI_STEP_CURRENT))
 }
 
 tui_run_module() {
     local module="$1"
     local script="$2"
 
-    gum spin --spinner points --spinner.foreground 2 --title.foreground 4 --title "$module" -- \
+    gum spin --spinner points --spinner.foreground 2 --title.foreground 4 --title "$module ($TUI_STEP_CURRENT/$TUI_STEP_TOTAL)" -- \
         bash -c 'set -euo pipefail; exec 2>>"$LOG_FILE"; source "$1"' _ "$script"
     return $?
 }
@@ -155,7 +160,7 @@ tui_skip_module() {
     local module="$1"
     TUI_MODULE_STATUS["$module"]="skipped"
 
-    gum style --faint "○ $module (skipped)"
+    gum style --faint " ○ $module (skipped)"
 }
 
 tui_set_substep() {
