@@ -97,6 +97,18 @@ install_btop_theme() {
     info "btop Catppuccin theme installed"
 }
 
+# Download Yazi Catppuccin theme
+install_yazi_theme() {
+    local theme_file="$ACTUAL_HOME/.config/yazi/theme.toml"
+
+    log "Installing Yazi Catppuccin theme..."
+    run_as_user mkdir -p "$ACTUAL_HOME/.config/yazi"
+    run_as_user curl -fsSL -o "$theme_file" \
+        "https://raw.githubusercontent.com/catppuccin/yazi/main/themes/mocha/catppuccin-mocha-blue.toml"
+
+    info "Yazi Catppuccin theme installed"
+}
+
 # Install wallpapers (copies all from assets/wallpapers/)
 install_wallpapers() {
     local src_dir="$SCRIPT_DIR/assets/wallpapers"
@@ -137,6 +149,7 @@ install_kde_theme
 install_gtk_theme
 install_vscode_theme
 install_btop_theme
+install_yazi_theme
 install_wallpapers
 
 # Apply Catppuccin theme in KDE if available

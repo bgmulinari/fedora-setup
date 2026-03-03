@@ -24,3 +24,4 @@ zoxide
 bat
 helium-bin
 lazygit
+yazi
