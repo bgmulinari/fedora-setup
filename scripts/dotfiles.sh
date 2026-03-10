@@ -9,6 +9,31 @@ log "Setting up dotfiles with GNU Stow..."
 DOTFILES_DIR="$SCRIPT_DIR/dotfiles"
 TARGET_HOME="$ACTUAL_HOME"
 
+# Map stow packages to the command they require.
+# Packages not listed here are always stowed.
+declare -A STOW_REQUIRED_CMD=(
+    [btop]="btop"
+    [claude]="claude"
+    [ghostty]="ghostty"
+    [nvim]="nvim"
+    [starship]="starship"
+    [vscode]="code"
+    [zsh]="zsh"
+)
+
+# Check if a command is available in the user's PATH
+is_command_available() {
+    run_as_user bash -lc "command -v '$1'" &> /dev/null
+}
+
+# Decide whether a stow package should be stowed
+should_stow_package() {
+    local package="$1"
+    # Always stow if no required command is configured
+    [[ -z "${STOW_REQUIRED_CMD[$package]+x}" ]] && return 0
+    is_command_available "${STOW_REQUIRED_CMD[$package]}"
+}
+
 # Ensure stow is installed
 install_stow() {
     if command -v stow &> /dev/null; then
@@ -117,9 +142,18 @@ stow_all_packages() {
 
     log "Found ${#packages[@]} stow package(s): ${packages[*]}"
 
+    local stowed=0 skipped=0
     for package in "${packages[@]}"; do
+        if ! should_stow_package "$package"; then
+            local required_cmd="${STOW_REQUIRED_CMD[$package]}"
+            log "Skipping stow package '$package' ('$required_cmd' not found)"
+            ((skipped++)) || true
+            continue
+        fi
         stow_package "$package"
+        ((stowed++)) || true
     done
+    log "Stowed $stowed package(s), skipped $skipped"
 }
 
 # Execute
