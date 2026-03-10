@@ -1,0 +1,184 @@
+#!/usr/bin/env bash
+# dotnet-devcert — manage ASP.NET Core HTTPS dev certificate and CA trust
+set -euo pipefail
+
+NSS_CERT_NAME="ASP.NET Core Dev Cert"
+
+BROWSER_DIRS=(
+    "$HOME/.mozilla/firefox"
+    "$HOME/.zen"
+    "$HOME/.librewolf"
+    "$HOME/.waterfox"
+    "$HOME/.floorp"
+)
+
+usage() {
+    echo "Usage: dotnet-devcert <command>"
+    echo ""
+    echo "Commands:"
+    echo "  status   Show current state of the dev certificate and browser imports"
+    echo "  create   Generate dev certificate, install CA system-wide, and import into browsers"
+}
+
+find_ca_cert() {
+    local user
+    user="$(whoami)"
+
+    local candidates=(
+        "/etc/pki/ca-trust/source/anchors/aspnet-dev-${user}.pem"           # Fedora/RHEL
+        "/usr/local/share/ca-certificates/aspnet-dev-${user}.crt"           # Debian/Ubuntu
+        "/etc/ca-certificates/trust-source/anchors/aspnet-dev-${user}.crt"  # Arch
+        "/usr/share/pki/trust/anchors/aspnet-dev-${user}.crt"              # openSUSE
+    )
+
+    for path in "${candidates[@]}"; do
+        if [[ -f "$path" ]]; then
+            echo "$path"
+            return 0
+        fi
+    done
+
+    return 1
+}
+
+find_browser_profiles() {
+    for dir in "${BROWSER_DIRS[@]}"; do
+        if [[ -d "$dir" ]]; then
+            while IFS= read -r db; do
+                dirname "$db"
+            done < <(find "$dir" -name "cert9.db" 2>/dev/null)
+        fi
+    done
+}
+
+cmd_status() {
+    echo "==> Dev certificate"
+
+    if ! command -v dotnet &>/dev/null; then
+        echo "    dotnet: not installed"
+        return
+    fi
+
+    if ! dotnet tool list -g | grep -q linux-dev-certs; then
+        echo "    linux-dev-certs tool: not installed"
+        echo "    Install it with: dotnet tool install -g linux-dev-certs"
+        return
+    fi
+
+    local ca_cert
+    if ca_cert="$(find_ca_cert)"; then
+        echo "    CA certificate: $ca_cert"
+        local expiry
+        expiry="$(openssl x509 -enddate -noout -in "$ca_cert" 2>/dev/null | cut -d= -f2)" || true
+        if [[ -n "$expiry" ]]; then
+            echo "    Expires: $expiry"
+            if ! openssl x509 -checkend 0 -noout -in "$ca_cert" &>/dev/null; then
+                echo "    Status: EXPIRED"
+            else
+                echo "    Status: valid"
+            fi
+        fi
+    else
+        echo "    CA certificate: not found"
+        echo "    Run 'dotnet-devcert create' to generate one."
+        return
+    fi
+
+    echo ""
+    echo "==> Browser profiles"
+
+    if ! command -v certutil &>/dev/null; then
+        echo "    certutil (nss-tools): not installed — cannot check browser imports"
+        return
+    fi
+
+    local profiles
+    mapfile -t profiles < <(find_browser_profiles)
+
+    if [[ ${#profiles[@]} -eq 0 ]]; then
+        echo "    No Firefox-based browser profiles found."
+        return
+    fi
+
+    local profile_name
+    for profile_dir in "${profiles[@]}"; do
+        profile_name="$(basename "$profile_dir")"
+        if certutil -L -d "sql:$profile_dir" -n "$NSS_CERT_NAME" &>/dev/null; then
+            echo "    $profile_name: imported"
+        else
+            echo "    $profile_name: not imported"
+        fi
+    done
+}
+
+cmd_create() {
+    if ! command -v dotnet &>/dev/null; then
+        echo "ERROR: dotnet is not installed."
+        exit 1
+    fi
+
+    if ! dotnet tool list -g | grep -q linux-dev-certs; then
+        echo "ERROR: linux-dev-certs is not installed."
+        echo "Install it with: dotnet tool install -g linux-dev-certs"
+        exit 1
+    fi
+
+    echo "==> Generating new dev certificate..."
+    dotnet linux-dev-certs install
+
+    # --- Import CA into Firefox-based browser profiles (beyond system trust) ---
+
+    local profiles
+    mapfile -t profiles < <(find_browser_profiles)
+
+    if [[ ${#profiles[@]} -eq 0 ]]; then
+        echo ""
+        echo "==> No Firefox-based browser profiles found — skipping NSS import."
+        echo "    Done!"
+        return
+    fi
+
+    if ! command -v certutil &>/dev/null; then
+        echo ""
+        echo "WARNING: certutil (nss-tools) is not installed."
+        echo "  The dev certificate was generated, but could not be imported"
+        echo "  into your browser. Install nss-tools and re-run this script."
+        echo "  e.g.: sudo dnf install nss-tools  (Fedora)"
+        echo "        sudo apt install libnss3-tools  (Debian/Ubuntu)"
+        return
+    fi
+
+    local ca_cert
+    ca_cert="$(find_ca_cert)" || {
+        echo "ERROR: Could not locate the CA certificate in the system trust store."
+        exit 1
+    }
+
+    echo ""
+    echo "==> Importing CA into browser profiles..."
+
+    local imported=0
+    local profile_name
+    for profile_dir in "${profiles[@]}"; do
+        profile_name="$(basename "$profile_dir")"
+
+        # Remove old entry if present
+        if certutil -L -d "sql:$profile_dir" -n "$NSS_CERT_NAME" &>/dev/null; then
+            certutil -D -d "sql:$profile_dir" -n "$NSS_CERT_NAME"
+        fi
+
+        certutil -A -d "sql:$profile_dir" -n "$NSS_CERT_NAME" -t "CT,C,C" -i "$ca_cert"
+        echo "    Imported into: $profile_name"
+        ((imported++))
+    done
+
+    echo ""
+    echo "==> Done! Imported into $imported profile(s)."
+    echo "    Restart your browser for the change to take effect."
+}
+
+case "${1:-}" in
+    status) cmd_status ;;
+    create) cmd_create ;;
+    *)      usage; exit 1 ;;
+esac
