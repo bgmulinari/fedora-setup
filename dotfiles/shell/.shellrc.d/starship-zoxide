@@ -11,6 +11,6 @@ fi
 command -v starship &>/dev/null && eval "$(starship init $_current_shell)"
 
 # Initialize Zoxide (smarter cd)
-command -v zoxide &>/dev/null && eval "$(zoxide init --cmd cd $_current_shell)"
+[[ $- == *i* ]] && command -v zoxide &>/dev/null && eval "$(zoxide init --cmd cd $_current_shell)"
 
 unset _current_shell
