@@ -13,6 +13,7 @@
     "csharp-lsp@claude-plugins-official": true
   },
   "alwaysThinkingEnabled": true,
+  "effortLevel": "high",
   "promptSuggestionEnabled": false,
-  "effortLevel": "high"
+  "voiceEnabled": true
 }
