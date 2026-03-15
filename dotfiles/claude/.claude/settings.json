@@ -3,7 +3,6 @@
     "commit": "",
     "pr": ""
   },
-  "model": "opus",
   "statusLine": {
     "type": "command",
     "command": "/bin/bash ~/.claude/statusline-session.sh"
