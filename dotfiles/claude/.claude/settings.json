@@ -14,5 +14,6 @@
   "alwaysThinkingEnabled": true,
   "effortLevel": "high",
   "promptSuggestionEnabled": false,
-  "voiceEnabled": true
+  "voiceEnabled": true,
+  "showClearContextOnPlanAccept": true
 }
