@@ -51,6 +51,14 @@ else
     skip "brew"
 fi
 
+# ── npm packages ─────────────────────────────────────────────────────
+section "npm packages"
+if command -v npm &>/dev/null; then
+    npm update -g || failures+=("npm packages")
+else
+    skip "npm"
+fi
+
 # ── Oh My Zsh ────────────────────────────────────────────────────────
 section "Oh My Zsh"
 if [[ -f "${ZSH:-$HOME/.oh-my-zsh}/tools/upgrade.sh" ]]; then
